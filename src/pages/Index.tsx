@@ -1,12 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { motion } from "framer-motion";
+import { HeroSection } from "@/components/HeroSection";
+import { SearchSection } from "@/components/SearchSection";
+import { PromptStudio } from "@/components/PromptStudio";
+import { ToolGallery } from "@/components/ToolGallery";
+import { HowItWorks } from "@/components/HowItWorks";
+import { FAQ } from "@/components/FAQ";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <HeroSection />
+        <SearchSection />
+        <PromptStudio />
+        <ToolGallery />
+        <HowItWorks />
+        <FAQ />
+      </motion.main>
+      
+      <Footer />
     </div>
   );
 };

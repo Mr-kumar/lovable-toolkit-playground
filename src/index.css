@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Lovable Tools Design System - Warm, friendly, modern */
 
 @layer base {
   :root {
+    /* Core brand colors - warm and inviting */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -17,26 +18,44 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Lovable coral primary with warm undertones */
+    --primary: 14 91% 60%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 14 100% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Soft secondary colors */
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 14 91% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom gradient variables */
+    --gradient-primary: linear-gradient(135deg, hsl(14 91% 60%), hsl(14 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220 14.3% 95.9%), hsl(220 20% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(14 91% 60%) 0%, hsl(280 100% 70%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 14.3% 98%));
+
+    /* Shadow system */
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 91% / 0.05);
+    --shadow-card: 0 4px 6px -1px hsl(220 13% 91% / 0.1), 0 2px 4px -1px hsl(220 13% 91% / 0.06);
+    --shadow-glow: 0 10px 40px -10px hsl(14 91% 60% / 0.25);
+    
+    /* Animation durations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
     --sidebar-background: 0 0% 98%;
 
@@ -94,12 +113,88 @@ All colors MUST be HSL.
   }
 }
 
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
+}
+
+@layer components {
+  /* Hero button variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground 
+           px-8 py-4 rounded-xl font-semibold text-lg
+           hover:shadow-[var(--shadow-glow)] hover:scale-105
+           transition-all duration-300 ease-out;
+  }
+
+  .btn-hero-outline {
+    @apply border-2 border-primary text-primary bg-background
+           px-8 py-4 rounded-xl font-semibold text-lg
+           hover:bg-primary hover:text-primary-foreground hover:shadow-[var(--shadow-glow)]
+           transition-all duration-300 ease-out;
+  }
+
+  /* Card variants */
+  .card-elevated {
+    @apply bg-gradient-to-br from-card to-secondary/20 
+           shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-glow)]
+           border border-border/50 rounded-2xl
+           transition-all duration-300 ease-out hover:scale-[1.02];
+  }
+
+  .card-tool {
+    @apply bg-gradient-to-br from-card to-secondary/30
+           shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-glow)]
+           border border-border/50 rounded-xl p-6
+           transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1;
+  }
+
+  /* Search input */
+  .search-input {
+    @apply w-full px-6 py-4 text-lg rounded-xl border border-border/50
+           bg-background/80 backdrop-blur-sm
+           focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+           transition-all duration-300 ease-out;
+  }
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Gradient backgrounds */
+  .bg-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-section {
+    background: var(--gradient-secondary);
+  }
+
+  /* Animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounceSubtle 2s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
