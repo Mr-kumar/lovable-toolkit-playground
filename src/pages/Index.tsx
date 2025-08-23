@@ -22,14 +22,14 @@ const Index = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <HeroSection />
-        <SearchSection />
         <FilterSection 
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
         />
-        <PromptStudio />
         <ToolGallery selectedCategory={selectedCategory} />
+        <HeroSection />
+        <SearchSection />
+        <PromptStudio />
         <HowItWorks />
         <FAQ />
       </motion.main>
