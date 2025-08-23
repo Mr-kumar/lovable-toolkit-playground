@@ -91,12 +91,13 @@ const tools = [
   }
 ];
 
-export const ToolGallery = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+interface ToolGalleryProps {
+  selectedCategory: string;
+}
+
+export const ToolGallery = ({ selectedCategory }: ToolGalleryProps) => {
   const [processingTool, setProcessingTool] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-
-  const categories = ["All", "Image", "PDF"];
   
   const filteredTools = selectedCategory === "All" 
     ? tools 
@@ -147,31 +148,6 @@ export const ToolGallery = () => {
           </p>
         </motion.div>
 
-        {/* Category Filter */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          viewport={{ once: true }}
-          className="flex justify-center mb-12"
-        >
-          <div className="flex space-x-2 p-2 bg-background rounded-2xl border border-border/50">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "ghost"}
-                className={`px-6 py-2 rounded-xl transition-all duration-300 ${
-                  selectedCategory === category 
-                    ? "bg-primary text-primary-foreground shadow-lg" 
-                    : "hover:bg-muted"
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </motion.div>
 
         {/* Tools Grid */}
         <motion.div
