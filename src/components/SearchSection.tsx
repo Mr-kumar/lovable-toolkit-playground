@@ -23,7 +23,7 @@ export const SearchSection = () => {
   );
 
   return (
-    <section className="section-padding bg-section">
+    <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-section">
       <div className="container mx-auto max-w-4xl">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
@@ -32,14 +32,14 @@ export const SearchSection = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
             What would you like to{" "}
             <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
               create
             </span>{" "}
             today?
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
             Search for any tool or describe what you need - we'll make it lovable! ✨
           </p>
         </motion.div>

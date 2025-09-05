@@ -146,14 +146,14 @@
   /* Hero button variants */
   .btn-hero {
     @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground 
-           px-8 py-4 rounded-xl font-semibold text-lg
+           px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg
            hover:shadow-[var(--shadow-glow)] hover:scale-105
            transition-all duration-300 ease-out;
   }
 
   .btn-hero-outline {
     @apply border-2 border-primary text-primary bg-background
-           px-8 py-4 rounded-xl font-semibold text-lg
+           px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg
            hover:bg-primary hover:text-primary-foreground hover:shadow-[var(--shadow-glow)]
            transition-all duration-300 ease-out;
   }
@@ -175,7 +175,7 @@
 
   /* Search input */
   .search-input {
-    @apply w-full px-6 py-4 text-lg rounded-xl border border-border/50
+    @apply w-full px-4 py-3 sm:px-6 sm:py-4 text-base sm:text-lg rounded-xl border border-border/50
            bg-background/80 backdrop-blur-sm
            focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
            transition-all duration-300 ease-out;
@@ -183,7 +183,7 @@
 
   /* Section spacing */
   .section-padding {
-    @apply py-20 px-4 sm:px-6 lg:px-8;
+    @apply py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8;
   }
 
   /* Gradient backgrounds */

@@ -26,14 +26,14 @@ export const Header = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-2"
           >
             <Heart className="h-8 w-8 text-red-500 fill-current" />
-            <span className="text-xl sm:text-2xl font-bold text-black">
+            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-black">
               PDFFlow
             </span>
           </motion.div>
