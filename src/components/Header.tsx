@@ -134,34 +134,158 @@ export const Header = () => {
               <div className="py-4 space-y-2">
                 <button
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={closeDropdowns}
+                  onClick={() => { navigate("/merge-pdf"); closeDropdowns(); }}
                 >
                   MERGE PDF
                 </button>
                 <button
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={closeDropdowns}
+                  onClick={() => { navigate("/split-pdf"); closeDropdowns(); }}
                 >
                   SPLIT PDF
                 </button>
                 <button
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={closeDropdowns}
+                  onClick={() => { navigate("/compress-pdf"); closeDropdowns(); }}
                 >
                   COMPRESS PDF
                 </button>
-                <button
-                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={() => handleDropdownToggle("convert")}
-                >
-                  CONVERT PDF
-                </button>
-                <button
-                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={() => handleDropdownToggle("all-tools")}
-                >
-                  ALL PDF TOOLS
-                </button>
+                
+                {/* Convert PDF Mobile Section */}
+                <div className="space-y-2">
+                  <button
+                    className={`block w-full text-left px-4 py-2 font-medium transition-colors ${
+                      activeDropdown === "convert"
+                        ? "text-red-500 bg-red-50"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleDropdownToggle("convert")}
+                  >
+                    CONVERT PDF
+                  </button>
+                  {activeDropdown === "convert" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-gray-50 mx-4 rounded-lg"
+                    >
+                      <div className="p-3 space-y-3">
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            TO PDF
+                          </h4>
+                          <div className="space-y-1">
+                            <button onClick={() => { navigate("/jpg-to-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              JPG to PDF
+                            </button>
+                            <button onClick={() => { navigate("/word-to-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              WORD to PDF
+                            </button>
+                            <button onClick={() => { navigate("/excel-to-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              EXCEL to PDF
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            FROM PDF
+                          </h4>
+                          <div className="space-y-1">
+                            <button onClick={() => { navigate("/pdf-to-jpg"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              PDF to JPG
+                            </button>
+                            <button onClick={() => { navigate("/pdf-to-word"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              PDF to WORD
+                            </button>
+                            <button onClick={() => { navigate("/pdf-to-excel"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              PDF to EXCEL
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* All Tools Mobile Section */}
+                <div className="space-y-2">
+                  <button
+                    className={`block w-full text-left px-4 py-2 font-medium transition-colors ${
+                      activeDropdown === "all-tools"
+                        ? "text-red-500 bg-red-50"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleDropdownToggle("all-tools")}
+                  >
+                    ALL PDF TOOLS
+                  </button>
+                  {activeDropdown === "all-tools" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-gray-50 mx-4 rounded-lg"
+                    >
+                      <div className="p-3 space-y-4">
+                        {/* Popular Tools */}
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            POPULAR
+                          </h4>
+                          <div className="space-y-1">
+                            <button onClick={() => { navigate("/merge-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Merge PDF
+                            </button>
+                            <button onClick={() => { navigate("/split-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Split PDF
+                            </button>
+                            <button onClick={() => { navigate("/compress-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Compress PDF
+                            </button>
+                            <button onClick={() => { navigate("/rotate-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Rotate PDF
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* Convert Tools */}
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            CONVERT
+                          </h4>
+                          <div className="space-y-1">
+                            <button onClick={() => { navigate("/pdf-to-jpg"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              PDF to JPG
+                            </button>
+                            <button onClick={() => { navigate("/jpg-to-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              JPG to PDF
+                            </button>
+                            <button onClick={() => { navigate("/word-to-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              WORD to PDF
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Security Tools */}
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            SECURITY
+                          </h4>
+                          <div className="space-y-1">
+                            <button onClick={() => { navigate("/unlock-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Unlock PDF
+                            </button>
+                            <button onClick={() => { navigate("/protect-pdf"); closeDropdowns(); }} className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 py-1">
+                              Protect PDF
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
                 <div className="border-t border-gray-200 pt-4 px-4 space-y-2">
                   <Button
                     variant="ghost"
@@ -180,7 +304,7 @@ export const Header = () => {
           )}
         </AnimatePresence>
 
-        {/* Dropdown Menu */}
+        {/* Desktop Dropdown Menu */}
         <AnimatePresence>
           {activeDropdown && (
             <motion.div
@@ -188,7 +312,7 @@ export const Header = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
+              className="hidden lg:block absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50"
             >
               <PDFToolsDropdown activeDropdown={activeDropdown} />
             </motion.div>
