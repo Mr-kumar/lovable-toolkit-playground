@@ -48,13 +48,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
             >
-              All-in-One
-              <br />
-              <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                PDF & Image
-              </span>
-              <br />
-              Toolbox
+              Every tool you need to work with PDFs in one place
             </motion.h1>
 
             <motion.p
@@ -63,10 +57,9 @@ export const HeroSection = () => {
               transition={{ delay: 0.5, duration: 0.8 }}
               className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed"
             >
-              Merge, split, compress, convert, OCR, and fix photos with a sprinkle of{" "}
-              <span className="inline-flex items-center">
-                💖
-              </span>
+              Every tool you need to use PDFs, at your fingertips. All are 100%
+              FREE and easy to use! Merge, split, compress, convert, rotate,
+              unlock and watermark PDFs with just a few clicks.
             </motion.p>
 
             <motion.div
@@ -79,9 +72,7 @@ export const HeroSection = () => {
                 Start Creating
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button className="btn-hero-outline">
-                See All Tools
-              </Button>
+              <Button className="btn-hero-outline">See All Tools</Button>
             </motion.div>
           </motion.div>
 

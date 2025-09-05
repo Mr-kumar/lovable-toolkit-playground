@@ -1,14 +1,30 @@
-import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, ChevronDown, Grid3X3, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { PDFToolsDropdown } from "./PDFToolsDropdown";
 
 export const Header = () => {
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleDropdownToggle = (dropdown: string) => {
+    setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
+  };
+
+  const closeDropdowns = () => {
+    setActiveDropdown(null);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/50"
+      className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -16,28 +32,166 @@ export const Header = () => {
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-2"
           >
-            <Heart className="h-8 w-8 text-primary fill-current" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-              Lovable Tools
+            <Heart className="h-8 w-8 text-red-500 fill-current" />
+            <span className="text-xl sm:text-2xl font-bold text-black">
+              PDFFlow
             </span>
           </motion.div>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#tools" className="text-muted-foreground hover:text-foreground transition-colors">
-              Tools
-            </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              How it Works
-            </a>
-            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
-            </a>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            <button
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
+              onClick={() => navigate("/merge-pdf")}
+            >
+              MERGE PDF
+            </button>
+            <button
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
+              onClick={() => navigate("/split-pdf")}
+            >
+              SPLIT PDF
+            </button>
+            <button
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
+              onClick={() => navigate("/compress-pdf")}
+            >
+              COMPRESS PDF
+            </button>
+            <button
+              className={`font-medium flex items-center transition-colors text-sm xl:text-base ${
+                activeDropdown === "convert"
+                  ? "text-red-500"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              onClick={() => handleDropdownToggle("convert")}
+            >
+              CONVERT PDF
+              <ChevronDown
+                className={`ml-1 h-4 w-4 transition-transform ${
+                  activeDropdown === "convert" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <button
+              className={`font-medium flex items-center transition-colors text-sm xl:text-base ${
+                activeDropdown === "all-tools"
+                  ? "text-red-500"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              onClick={() => handleDropdownToggle("all-tools")}
+            >
+              ALL PDF TOOLS
+              <ChevronDown
+                className={`ml-1 h-4 w-4 transition-transform ${
+                  activeDropdown === "all-tools" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
           </nav>
 
-          <Button className="btn-hero">
-            Get Started
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              className="text-gray-600 hover:text-gray-900 text-sm"
+            >
+              Login
+            </Button>
+            <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2">
+              Sign up
+            </Button>
+            <Button variant="ghost" size="icon" className="hidden lg:flex">
+              <Grid3X3 className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t border-gray-200 bg-white"
+            >
+              <div className="py-4 space-y-2">
+                <button
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                  onClick={closeDropdowns}
+                >
+                  MERGE PDF
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                  onClick={closeDropdowns}
+                >
+                  SPLIT PDF
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                  onClick={closeDropdowns}
+                >
+                  COMPRESS PDF
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                  onClick={() => handleDropdownToggle("convert")}
+                >
+                  CONVERT PDF
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                  onClick={() => handleDropdownToggle("all-tools")}
+                >
+                  ALL PDF TOOLS
+                </button>
+                <div className="border-t border-gray-200 pt-4 px-4 space-y-2">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-gray-600 hover:text-gray-900"
+                    onClick={closeDropdowns}
+                  >
+                    Login
+                  </Button>
+                  <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
+                    Sign up
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Dropdown Menu */}
+        <AnimatePresence>
+          {activeDropdown && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
+            >
+              <PDFToolsDropdown activeDropdown={activeDropdown} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );
