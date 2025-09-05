@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ChevronDown, Grid3X3, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { PDFToolsDropdown } from "./PDFToolsDropdown";
 
 export const Header = () => {
@@ -95,11 +95,12 @@ export const Header = () => {
             <Button
               variant="ghost"
               className="text-gray-600 hover:text-gray-900 text-sm"
+              asChild
             >
-              Login
+              <Link to="/login">Login</Link>
             </Button>
-            <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2">
-              Sign up
+            <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2" asChild>
+              <Link to="/signup">Sign up</Link>
             </Button>
             <Button variant="ghost" size="icon" className="hidden lg:flex">
               <Grid3X3 className="h-5 w-5" />
@@ -166,11 +167,12 @@ export const Header = () => {
                     variant="ghost"
                     className="w-full justify-start text-gray-600 hover:text-gray-900"
                     onClick={closeDropdowns}
+                    asChild
                   >
-                    Login
+                    <Link to="/login">Login</Link>
                   </Button>
-                  <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
-                    Sign up
+                  <Button className="w-full bg-red-500 hover:bg-red-600 text-white" asChild>
+                    <Link to="/signup">Sign up</Link>
                   </Button>
                 </div>
               </div>
