@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: pydantic-env
+Version: 0.3.0
+Summary: Pydantic models for environment variables
+Author: Jeremy Schulman
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: first (>=2.0.2,<3.0.0)
+Requires-Dist: pydantic (>2)

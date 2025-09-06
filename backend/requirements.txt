@@ -1,0 +1,82 @@
+# FastAPI and web framework
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-multipart==0.0.20
+
+# Database
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10  # PostgreSQL adapter
+sqlite3  # Built-in SQLite support
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.20
+
+# PDF Processing
+PyPDF2==3.0.1
+reportlab==4.2.5
+pdf2image==1.17.0
+Pillow==10.4.0
+pymupdf==1.25.2  # Alternative PDF library
+pdfplumber==0.11.4  # For text extraction
+
+# Document Conversion
+python-docx==1.1.2
+openpyxl==3.1.5
+python-pptx==0.6.23
+weasyprint==62.3  # HTML to PDF
+markdown==3.7.0
+
+# Image Processing
+opencv-python==4.10.0.84
+pytesseract==0.3.13  # OCR
+
+# File handling and utilities
+aiofiles==24.1.0
+python-magic==0.4.27
+chardet==5.2.0
+
+# Background tasks and queues
+celery==5.4.0
+redis==5.2.0
+
+# Environment and configuration
+python-dotenv==1.0.1
+pydantic-settings==2.6.1
+
+# HTTP client for external APIs
+httpx==0.28.1
+aiohttp==3.11.11
+
+# Logging and monitoring
+structlog==24.4.0
+sentry-sdk[fastapi]==2.19.2
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# Development tools
+black==24.10.0
+isort==5.13.2
+flake8==7.1.1
+mypy==1.13.0
+
+# CORS and middleware
+python-cors==1.7.0
+
+# File storage
+boto3==1.35.93  # AWS S3
+azure-storage-blob==12.23.0  # Azure Blob Storage
+
+# Rate limiting
+slowapi==0.1.9
+
+# Email
+fastapi-mail==1.5.1
+
+# Validation
+email-validator==2.2.0
