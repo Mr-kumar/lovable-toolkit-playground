@@ -28,36 +28,41 @@ export const Header = () => {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-2"
-          >
-            <Heart className="h-8 w-8 text-red-500 fill-current" />
-            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-black">
-              PDFFlow
-            </span>
-          </motion.div>
+          <Link to="/" onClick={closeDropdowns}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-2 cursor-pointer"
+            >
+              <Heart className="h-8 w-8 text-red-500 fill-current" />
+              <span className="text-lg sm:text-xl lg:text-2xl font-bold text-black">
+                PDFFlow
+              </span>
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-            <button
+            <Link
+              to="/merge-pdf"
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
-              onClick={() => navigate("/merge-pdf")}
+              onClick={closeDropdowns}
             >
               MERGE PDF
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/split-pdf"
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
-              onClick={() => navigate("/split-pdf")}
+              onClick={closeDropdowns}
             >
               SPLIT PDF
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/compress-pdf"
               className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm xl:text-base"
-              onClick={() => navigate("/compress-pdf")}
+              onClick={closeDropdowns}
             >
               COMPRESS PDF
-            </button>
+            </Link>
             <button
               className={`font-medium flex items-center transition-colors text-sm xl:text-base ${
                 activeDropdown === "convert"
@@ -132,24 +137,27 @@ export const Header = () => {
               className="lg:hidden border-t border-gray-200 bg-white"
             >
               <div className="py-4 space-y-2">
-                <button
+                <Link
+                  to="/merge-pdf"
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={() => { navigate("/merge-pdf"); closeDropdowns(); }}
+                  onClick={closeDropdowns}
                 >
                   MERGE PDF
-                </button>
-                <button
+                </Link>
+                <Link
+                  to="/split-pdf"
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={() => { navigate("/split-pdf"); closeDropdowns(); }}
+                  onClick={closeDropdowns}
                 >
                   SPLIT PDF
-                </button>
-                <button
+                </Link>
+                <Link
+                  to="/compress-pdf"
                   className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
-                  onClick={() => { navigate("/compress-pdf"); closeDropdowns(); }}
+                  onClick={closeDropdowns}
                 >
                   COMPRESS PDF
-                </button>
+                </Link>
                 
                 {/* Convert PDF Mobile Section */}
                 <div className="space-y-2">

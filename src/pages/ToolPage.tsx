@@ -405,8 +405,14 @@ const ToolPage = () => {
 
       <main className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <button
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-          onClick={() => navigate(-1)}
+          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </button>
