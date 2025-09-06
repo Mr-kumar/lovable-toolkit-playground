@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ChevronDown, Grid3X3, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,34 @@ export const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Close dropdown when navigating
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setActiveDropdown(null);
+      setMobileMenuOpen(false);
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, []);
 
   const handleDropdownToggle = (dropdown: string) => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
@@ -20,12 +48,13 @@ export const Header = () => {
   };
 
   return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200"
-    >
+    <div ref={dropdownRef}>
+      <motion.header
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200"
+      >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link to="/" onClick={closeDropdowns}>
@@ -322,11 +351,12 @@ export const Header = () => {
               transition={{ duration: 0.2 }}
               className="hidden lg:block absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50"
             >
-              <PDFToolsDropdown activeDropdown={activeDropdown} />
+              <PDFToolsDropdown activeDropdown={activeDropdown} onToolClick={closeDropdowns} />
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </motion.header>
+        </div>
+      </motion.header>
+    </div>
   );
 };

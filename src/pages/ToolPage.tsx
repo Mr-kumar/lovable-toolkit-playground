@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -392,8 +392,14 @@ const ToolPage = () => {
     }, 180);
   };
 
+  // Handle invalid tool redirect
+  useEffect(() => {
+    if (!meta) {
+      navigate("/", { replace: true });
+    }
+  }, [meta, navigate]);
+
   if (!meta) {
-    navigate("/", { replace: true });
     return null;
   }
 

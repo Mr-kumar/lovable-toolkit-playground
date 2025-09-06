@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 interface PDFToolsDropdownProps {
   activeDropdown: string;
+  onToolClick?: () => void;
 }
 
 const pdfTools = {
@@ -188,12 +189,13 @@ const pdfTools = {
   ],
 };
 
-export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
+export const PDFToolsDropdown = ({ activeDropdown, onToolClick }: PDFToolsDropdownProps) => {
   const navigate = useNavigate();
 
   const handleToolClick = (tool: any) => {
     if (!tool?.id) return;
     navigate(`/${tool.id}`);
+    onToolClick?.(); // Close dropdown after navigation
   };
 
   // CONVERT PDF Dropdown
