@@ -43,8 +43,8 @@ const pdfTools = {
       icon: Scissors,
       color: "text-green-500",
     },
-    { name: "Remove pages", icon: FileText, color: "text-red-500" },
-    { name: "Extract pages", icon: FileText, color: "text-purple-500" },
+    { id: "remove-pages", name: "Remove pages", icon: FileText, color: "text-red-500" },
+    { id: "extract-pages", name: "Extract pages", icon: FileText, color: "text-purple-500" },
     {
       id: "organize-pdf",
       name: "Organize PDF",
@@ -157,7 +157,7 @@ const pdfTools = {
       color: "text-cyan-500",
     },
     { id: "crop-pdf", name: "Crop PDF", icon: Crop, color: "text-pink-500" },
-    { name: "Edit PDF", icon: PenTool, color: "text-emerald-500" },
+    { id: "edit-pdf", name: "Edit PDF", icon: PenTool, color: "text-emerald-500" },
   ],
   security: [
     {
@@ -172,7 +172,7 @@ const pdfTools = {
       icon: Lock,
       color: "text-red-500",
     },
-    { name: "Sign PDF", icon: PenTool, color: "text-blue-500" },
+    { id: "sign-pdf", name: "Sign PDF", icon: PenTool, color: "text-blue-500" },
     {
       id: "redact-pdf",
       name: "Redact PDF",
@@ -287,6 +287,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
@@ -310,6 +311,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
@@ -333,6 +335,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
@@ -356,6 +359,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
@@ -379,6 +383,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
@@ -402,6 +407,7 @@ export const PDFToolsDropdown = ({ activeDropdown }: PDFToolsDropdownProps) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg cursor-pointer group"
+                  onClick={() => handleToolClick(tool)}
                 >
                   <tool.icon className={`h-5 w-5 ${tool.color}`} />
                   <span className="text-sm text-gray-700 group-hover:text-gray-900">
