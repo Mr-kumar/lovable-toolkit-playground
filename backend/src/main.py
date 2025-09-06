@@ -6,15 +6,17 @@ from contextlib import asynccontextmanager
 import os
 import logging
 from datetime import datetime
+from pathlib import Path
 
-# Import services
+# Import services and configuration
 from services.database import init_db, db_manager
 from services.cleanup import scheduled_cleanup
 from api.router import api_router
+from config import app_settings
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, app_settings.log_level),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
@@ -55,12 +57,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173"
-    ],
+    allow_origins=app_settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,14 +79,19 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(api_router, prefix="/api")
 
 # Static files for uploaded/downloaded files
-if not os.path.exists("storage"):
-    os.makedirs("storage")
-if not os.path.exists("storage/uploads"):
-    os.makedirs("storage/uploads")
-if not os.path.exists("storage/downloads"):
-    os.makedirs("storage/downloads")
+storage_path = Path(app_settings.storage_base_path)
+if not storage_path.exists():
+    storage_path.mkdir(parents=True)
 
-app.mount("/storage", StaticFiles(directory="storage"), name="storage")
+uploads_path = storage_path / "uploads"
+downloads_path = storage_path / "downloads"
+
+if not uploads_path.exists():
+    uploads_path.mkdir(parents=True)
+if not downloads_path.exists():
+    downloads_path.mkdir(parents=True)
+
+app.mount("/storage", StaticFiles(directory=str(storage_path)), name="storage")
 
 # Health check endpoints
 @app.get("/")
@@ -98,7 +100,8 @@ async def root():
     return {
         "message": "PDF Toolkit API is running",
         "version": "1.0.0",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
+        "environment": os.getenv("ENVIRONMENT", "development")
     }
 
 @app.get("/health")
@@ -123,7 +126,12 @@ async def health_check():
             "database": db_status,
             "storage": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
-            "stats": storage_stats
+            "stats": storage_stats,
+            "config": {
+                "max_file_size_mb": app_settings.max_file_size_mb,
+                "max_files_per_user_per_month": app_settings.max_files_per_user_per_month,
+                "pdf_processing_timeout_seconds": app_settings.pdf_processing_timeout_seconds
+            }
         }
     except Exception as e:
         return JSONResponse(
@@ -142,7 +150,13 @@ async def get_stats():
         stats = db_manager.get_database_stats()
         return {
             "database_stats": stats,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
+            "config": {
+                "max_file_size_mb": app_settings.max_file_size_mb,
+                "max_files_per_user_per_month": app_settings.max_files_per_user_per_month,
+                "cors_origins": app_settings.cors_origins,
+                "log_level": app_settings.log_level
+            }
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
@@ -165,17 +179,12 @@ async def manual_cleanup():
 if __name__ == "__main__":
     import uvicorn
     
-    # Get configuration from environment
-    host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8000"))
-    reload = os.getenv("RELOAD", "false").lower() == "true"
-    
-    logger.info(f"Starting server on {host}:{port}")
+    logger.info(f"Starting server on {app_settings.host}:{app_settings.port}")
     
     uvicorn.run(
         "main:app",
-        host=host,
-        port=port,
-        reload=reload,
-        log_level="info"
+        host=app_settings.host,
+        port=app_settings.port,
+        reload=app_settings.reload,
+        log_level=app_settings.log_level.lower()
     )

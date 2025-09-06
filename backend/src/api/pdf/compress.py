@@ -4,6 +4,7 @@ Handles PDF file compression operations
 """
 
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 from typing import Dict, Any
 import logging
@@ -75,17 +76,27 @@ async def compress_pdf(
             job.start_processing()
             db.commit()
             
-            # Process the PDF
+            # Process the PDF in a thread pool to avoid blocking the event loop
             output_path = f"storage/temp/compressed_{job.id}.pdf"
-            result = await pdf_processor.compress_pdf(file_info["path"], output_path, quality)
+            result = await run_in_threadpool(
+                pdf_processor.compress_pdf, 
+                file_info["path"], 
+                output_path, 
+                quality
+            )
             
             # Save processed file
             processed_info = await file_storage.save_processed_file(
                 output_path, current_user.id, job.id, f"compressed_{file.filename}"
             )
             
-            # Complete job
-            job.complete_job(processed_info["path"], result)
+            # Complete job with detailed results
+            job.complete_job(processed_info["path"], {
+                "compression_ratio": result["compression_ratio"],
+                "original_size": result["original_size"],
+                "compressed_size": result["compressed_size"],
+                "quality_used": quality
+            })
             job.output_file_name = processed_info["filename"]
             job.output_file_size = processed_info["size"]
             current_user.increment_usage()
@@ -103,6 +114,12 @@ async def compress_pdf(
                 "size_reduction_mb": round((result["original_size"] - result["compressed_size"]) / (1024 * 1024), 2)
             }
             
+        except HTTPException as e:
+            # Mark job as failed
+            job.fail_job(str(e.detail))
+            db.commit()
+            logger.error(f"PDF compression failed for job {job.id}: {e.detail}")
+            raise e
         except Exception as e:
             # Mark job as failed
             job.fail_job(str(e))

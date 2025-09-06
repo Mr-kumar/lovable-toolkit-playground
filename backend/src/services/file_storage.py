@@ -17,7 +17,7 @@ class FileStorageService:
     """Service for managing file storage operations"""
     
     def __init__(self, base_path: str = "storage"):
-        self.base_path = Path(base_path)
+        self.base_path = Path(base_path).resolve()
         self.uploads_dir = self.base_path / "uploads"
         self.downloads_dir = self.base_path / "downloads"
         self.temp_dir = self.base_path / "temp"
@@ -34,11 +34,54 @@ class FileStorageService:
         for directory in [self.uploads_dir, self.downloads_dir, self.temp_dir]:
             directory.mkdir(parents=True, exist_ok=True)
     
+    def _validate_path(self, file_path: str, allowed_base: Path) -> Path:
+        """
+        Validate that a file path is within the allowed base directory.
+        Prevents directory traversal attacks.
+        """
+        try:
+            # Resolve the absolute path
+            resolved_path = Path(file_path).resolve()
+            resolved_base = allowed_base.resolve()
+            
+            # Check if the resolved path is within the allowed base
+            if not str(resolved_path).startswith(str(resolved_base)):
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Access denied: Path outside allowed directory"
+                )
+            
+            return resolved_path
+            
+        except Exception as e:
+            if isinstance(e, HTTPException):
+                raise
+            logger.error(f"Path validation error: {e}")
+            raise HTTPException(status_code=400, detail="Invalid file path")
+    
+    def _validate_filename(self, filename: str) -> str:
+        """Validate filename to prevent path traversal"""
+        if not filename:
+            raise HTTPException(status_code=400, detail="Filename is required")
+        
+        # Remove any path components
+        clean_filename = Path(filename).name
+        
+        # Check for dangerous characters
+        dangerous_chars = ['..', '/', '\\', ':', '*', '?', '"', '<', '>', '|']
+        if any(char in clean_filename for char in dangerous_chars):
+            raise HTTPException(status_code=400, detail="Invalid filename")
+        
+        return clean_filename
+    
     async def save_uploaded_file(self, file: UploadFile, user_id: int, job_id: Optional[int] = None) -> Dict[str, Any]:
         """Save uploaded file and return file information"""
         try:
+            # Validate filename
+            clean_filename = self._validate_filename(file.filename)
+            
             # Generate unique filename
-            file_extension = self._get_file_extension(file.filename)
+            file_extension = self._get_file_extension(clean_filename)
             unique_filename = f"{uuid.uuid4()}{file_extension}"
             
             # Create user-specific directory
@@ -53,17 +96,22 @@ class FileStorageService:
             else:
                 file_path = user_dir / unique_filename
             
+            # Validate the final path
+            self._validate_path(str(file_path), self.uploads_dir)
+            
             # Save file
             async with aiofiles.open(file_path, 'wb') as f:
                 content = await file.read()
                 await f.write(content)
             
             # Get file information
-            file_info = await self._get_file_info(file_path, file.filename, content)
+            file_info = await self._get_file_info(file_path, clean_filename, content)
             
             logger.info(f"File saved: {file_path}")
             return file_info
             
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Error saving file: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
@@ -71,17 +119,23 @@ class FileStorageService:
     async def save_temp_file(self, file: UploadFile) -> Dict[str, Any]:
         """Save file to temporary directory"""
         try:
-            file_extension = self._get_file_extension(file.filename)
+            clean_filename = self._validate_filename(file.filename)
+            file_extension = self._get_file_extension(clean_filename)
             unique_filename = f"{uuid.uuid4()}{file_extension}"
             file_path = self.temp_dir / unique_filename
+            
+            # Validate the final path
+            self._validate_path(str(file_path), self.temp_dir)
             
             async with aiofiles.open(file_path, 'wb') as f:
                 content = await file.read()
                 await f.write(content)
             
-            file_info = await self._get_file_info(file_path, file.filename, content)
+            file_info = await self._get_file_info(file_path, clean_filename, content)
             return file_info
             
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Error saving temp file: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to save temporary file: {str(e)}")
@@ -89,9 +143,13 @@ class FileStorageService:
     async def save_processed_file(self, file_path: str, user_id: int, job_id: int, original_filename: str) -> Dict[str, Any]:
         """Save processed file to downloads directory"""
         try:
-            source_path = Path(file_path)
+            # Validate source path
+            source_path = self._validate_path(file_path, self.temp_dir)
             if not source_path.exists():
                 raise HTTPException(status_code=404, detail="Source file not found")
+            
+            # Validate filename
+            clean_filename = self._validate_filename(original_filename)
             
             # Create user-specific directory
             user_dir = self.downloads_dir / str(user_id)
@@ -102,9 +160,12 @@ class FileStorageService:
             job_dir.mkdir(exist_ok=True)
             
             # Generate output filename
-            file_extension = self._get_file_extension(original_filename)
+            file_extension = self._get_file_extension(clean_filename)
             output_filename = f"processed_{uuid.uuid4()}{file_extension}"
             output_path = job_dir / output_filename
+            
+            # Validate the final path
+            self._validate_path(str(output_path), self.downloads_dir)
             
             # Copy file
             shutil.copy2(source_path, output_path)
@@ -112,17 +173,28 @@ class FileStorageService:
             file_info = await self._get_file_info(output_path, output_filename, None)
             return file_info
             
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Error saving processed file: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to save processed file: {str(e)}")
     
     async def get_file_info(self, file_path: str) -> Dict[str, Any]:
         """Get file information"""
-        path = Path(file_path)
-        if not path.exists():
-            raise HTTPException(status_code=404, detail="File not found")
-        
-        return await self._get_file_info(path, path.name, None)
+        try:
+            # Validate path is within allowed directories
+            path = self._validate_path(file_path, self.base_path)
+            
+            if not path.exists():
+                raise HTTPException(status_code=404, detail="File not found")
+            
+            return await self._get_file_info(path, path.name, None)
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error getting file info: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to get file information: {str(e)}")
     
     async def _get_file_info(self, file_path: Path, original_filename: str, content: Optional[bytes]) -> Dict[str, Any]:
         """Get comprehensive file information"""
@@ -184,12 +256,17 @@ class FileStorageService:
     async def delete_file(self, file_path: str) -> bool:
         """Delete a file"""
         try:
-            path = Path(file_path)
+            # Validate path before deletion
+            path = self._validate_path(file_path, self.base_path)
+            
             if path.exists():
                 path.unlink()
                 logger.info(f"File deleted: {file_path}")
                 return True
             return False
+            
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Error deleting file: {e}")
             return False
@@ -203,8 +280,10 @@ class FileStorageService:
             
             for directory in [user_upload_dir, user_download_dir]:
                 if directory.exists():
-                    shutil.rmtree(directory)
-                    deleted_count += 1
+                    # Validate that we're only deleting user-specific directories
+                    if str(directory).startswith(str(self.base_path)):
+                        shutil.rmtree(directory)
+                        deleted_count += 1
             
             logger.info(f"Deleted {deleted_count} directories for user {user_id}")
             return deleted_count
