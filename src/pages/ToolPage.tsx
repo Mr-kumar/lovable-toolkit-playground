@@ -1256,7 +1256,7 @@ const ToolPage = () => {
             {/* Main Upload Area */}
             <div className="relative bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <div
-                className={`border-2 border-dashed rounded-2xl p-16 text-center ${
+                className={`border-2 border-dashed rounded-2xl p-8 sm:p-16 text-center ${
                   isDragOver ? "border-blue-500 bg-blue-50" : "border-gray-300"
                 }`}
                 onDrop={onDrop}
@@ -1270,13 +1270,13 @@ const ToolPage = () => {
                 }}
               >
                 {/* Rating */}
-                <div className="absolute top-6 left-6 flex items-center text-yellow-500">
+                <div className="hidden sm:flex absolute top-6 left-6 items-center text-yellow-500">
                   <Star className="h-5 w-5 fill-current mr-2" />
                   <span className="text-sm font-medium">4.9 (8,604 votes)</span>
                 </div>
 
                 {/* Download Desktop App */}
-                <div className="absolute top-6 right-6">
+                <div className="hidden sm:flex absolute top-6 right-6">
                   <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
                     Download Desktop App
                     <ExternalLink className="h-4 w-4 ml-1" />
@@ -1284,17 +1284,17 @@ const ToolPage = () => {
                 </div>
 
                 {/* Upload Icon and Button */}
-                <div className="mt-12 mb-8">
+                <div className="mt-8 mb-6 sm:mt-12 sm:mb-8">
                   <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
                     <Upload className="h-10 w-10 text-blue-600" />
                   </div>
                   <Button
                     onClick={() => inputRef.current?.click()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:px-10 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg"
                   >
                     Choose files
                   </Button>
-                  <p className="text-gray-500 mt-4 text-lg">
+                  <p className="text-gray-500 mt-4 text-base">
                     or drop files here
                   </p>
                 </div>
@@ -1308,14 +1308,14 @@ const ToolPage = () => {
                 </p>
 
                 {/* Security & Cloud Storage */}
-                <div className="absolute bottom-6 left-6 flex items-center text-green-600">
+                <div className="hidden sm:flex absolute bottom-6 left-6 items-center text-green-600">
                   <Shield className="h-5 w-5 mr-2" />
                   <span className="text-sm font-medium">
                     File protection is active
                   </span>
                 </div>
 
-                <div className="absolute bottom-6 right-6 flex items-center space-x-3">
+                <div className="hidden sm:flex absolute bottom-6 right-6 items-center space-x-3">
                   <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm font-semibold shadow-md">
                     G
                   </div>
@@ -1389,7 +1389,7 @@ const ToolPage = () => {
         {uiState === "preview" && (
           <section className="space-y-8" aria-label="File preview and settings">
             {/* File Preview Area */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-8">
                 {/* Merge preview - show even if only 1 file is uploaded so user can add more */}
                 {toolId === "merge-pdf" ? (
@@ -1417,8 +1417,8 @@ const ToolPage = () => {
                   /* Single File Preview for Other Tools (unchanged) */
                   <div>
                     <div className="flex items-center justify-center mb-8">
-                      <div className="bg-gray-50 rounded-xl p-6 max-w-sm border border-gray-200">
-                        <div className="bg-white rounded-lg h-40 w-64 flex items-center justify-center mb-4 shadow-sm border border-gray-200">
+                      <div className="bg-gray-50 rounded-xl p-6 w-full sm:max-w-sm border border-gray-200">
+                        <div className="bg-white rounded-lg h-40 w-full sm:w-64 flex items-center justify-center mb-4 shadow-sm border border-gray-200">
                           <FileText className="h-16 w-16 text-gray-400" />
                         </div>
                         <p className="text-gray-700 text-center font-medium">
@@ -1431,9 +1431,9 @@ const ToolPage = () => {
                     </div>
 
                     {/* File Actions */}
-                    <div className="flex justify-center space-x-6 mb-8">
+                    <div className="flex flex-col sm:flex-row items-center sm:justify-center space-y-3 sm:space-y-0 sm:space-x-6 mb-8">
                       <button
-                        className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50"
+                        className="flex items-center justify-center w-full sm:w-auto space-x-2 text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50"
                         title="Preview file"
                         aria-label="Preview file"
                       >
@@ -1442,7 +1442,7 @@ const ToolPage = () => {
                       </button>
                       <button
                         onClick={() => onRemoveFile(0)}
-                        className="flex items-center space-x-2 text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
+                        className="flex items-center justify-center w-full sm:w-auto space-x-2 text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
                         title="Remove file"
                         aria-label="Remove file"
                       >
@@ -1478,7 +1478,7 @@ const ToolPage = () => {
             </div>
 
             {/* Tool Settings */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">
                 Settings
               </h3>
@@ -1486,7 +1486,7 @@ const ToolPage = () => {
             </div>
 
             {/* Process Button */}
-            <div className="text-center bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="text-center bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
               <p className="text-gray-600 mb-6 text-lg">
                 {toolId === "merge-pdf" && files.length > 1
                   ? `${files.length} PDF files ready to merge`
@@ -1494,7 +1494,7 @@ const ToolPage = () => {
               </p>
               <Button
                 onClick={startProcessing}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 rounded-xl font-semibold text-lg shadow-lg"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 sm:px-12 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg"
               >
                 {getActionButtonText()}
               </Button>
@@ -1515,7 +1515,7 @@ const ToolPage = () => {
             className="text-center space-y-8"
             aria-label="File processing"
           >
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-12">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 sm:p-12">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
               <h3 className="text-gray-900 text-2xl font-semibold mb-4">
                 Processing your file...
