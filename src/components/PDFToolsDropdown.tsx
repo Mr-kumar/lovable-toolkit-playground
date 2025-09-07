@@ -44,8 +44,18 @@ const pdfTools = {
       icon: Scissors,
       color: "text-green-500",
     },
-    { id: "remove-pages", name: "Remove pages", icon: FileText, color: "text-red-500" },
-    { id: "extract-pages", name: "Extract pages", icon: FileText, color: "text-purple-500" },
+    {
+      id: "remove-pages",
+      name: "Remove pages",
+      icon: FileText,
+      color: "text-red-500",
+    },
+    {
+      id: "extract-pages",
+      name: "Extract pages",
+      icon: FileText,
+      color: "text-purple-500",
+    },
     {
       id: "organize-pdf",
       name: "Organize PDF",
@@ -158,7 +168,12 @@ const pdfTools = {
       color: "text-cyan-500",
     },
     { id: "crop-pdf", name: "Crop PDF", icon: Crop, color: "text-pink-500" },
-    { id: "edit-pdf", name: "Edit PDF", icon: PenTool, color: "text-emerald-500" },
+    {
+      id: "edit-pdf",
+      name: "Edit PDF",
+      icon: PenTool,
+      color: "text-emerald-500",
+    },
   ],
   security: [
     {
@@ -189,12 +204,15 @@ const pdfTools = {
   ],
 };
 
-export const PDFToolsDropdown = ({ activeDropdown, onToolClick }: PDFToolsDropdownProps) => {
+export const PDFToolsDropdown = ({
+  activeDropdown,
+  onToolClick,
+}: PDFToolsDropdownProps) => {
   const navigate = useNavigate();
 
   const handleToolClick = (tool: any) => {
     if (!tool?.id) return;
-    navigate(`/${tool.id}`);
+    navigate(`/tool/${tool.id}`);
     onToolClick?.(); // Close dropdown after navigation
   };
 
