@@ -337,29 +337,65 @@ export const ToolInterface = ({
           ) : (
             // Enhanced interface after file upload
             <div className="p-6 space-y-6">
-              {/* File preview and upload area */}
-              <div className="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center">
+              {/* File preview and upload area - matches screenshot design */}
+              <div className="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center min-h-[300px] flex items-center justify-center">
                 <div className="flex flex-col items-center space-y-4">
-                  {files.map((file, index) => (
-                    <div key={index} className="flex flex-col items-center space-y-2">
-                      <div className="bg-gray-700 p-4 rounded-lg border border-gray-600 relative">
-                        <div className="w-32 h-40 bg-white rounded flex items-center justify-center mb-2">
-                          <FileText className="h-16 w-16 text-gray-400" />
+                  {files.length === 1 ? (
+                    // Single file preview (like screenshot)
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="relative">
+                        {/* Search icon in top right */}
+                        <div className="absolute -top-2 -right-2 bg-blue-500 p-1 rounded">
+                          <FileSearch className="h-4 w-4 text-white" />
                         </div>
-                        <p className="text-xs text-gray-300 text-center">{file.name}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeFile(index)}
-                          className="absolute top-1 right-1 h-6 w-6 text-gray-400 hover:text-red-400"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                        {/* PDF preview */}
+                        <div className="w-40 h-52 bg-gray-700 rounded-lg border border-gray-600 p-2">
+                          <div className="w-full h-full bg-white rounded overflow-hidden">
+                            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                              <div className="text-xs text-gray-600 p-2 leading-tight">
+                                {/* Simulated document content */}
+                                <div className="space-y-1">
+                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
+                                  <div className="h-2 bg-gray-300 rounded w-2/3"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Filename */}
+                        <p className="text-sm text-gray-300 mt-2">{files[0].name}</p>
                       </div>
                     </div>
-                  ))}
+                  ) : (
+                    // Multiple files preview
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {files.map((file, index) => (
+                        <div key={index} className="flex flex-col items-center space-y-2">
+                          <div className="bg-gray-700 p-3 rounded-lg border border-gray-600 relative">
+                            <div className="w-24 h-32 bg-white rounded flex items-center justify-center mb-2">
+                              <FileText className="h-12 w-12 text-gray-400" />
+                            </div>
+                            <p className="text-xs text-gray-300 text-center truncate w-24">{file.name}</p>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeFile(index)}
+                              className="absolute -top-1 -right-1 h-5 w-5 text-gray-400 hover:text-red-400 bg-gray-800 rounded-full"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   
-                  <div className="flex items-center space-x-4 text-gray-400">
+                  {/* Status indicators */}
+                  <div className="flex items-center space-x-4 text-gray-400 mt-4">
                     <div className="bg-green-600 p-1 rounded">
                       <CheckCircle className="h-4 w-4 text-white" />
                     </div>
