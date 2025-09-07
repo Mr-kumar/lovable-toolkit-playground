@@ -197,7 +197,7 @@ export const Header = () => {
                   {/* Convert PDF Mobile Section */}
                   <div className="space-y-2">
                     <button
-                      className={`block w-full text-left px-4 py-2 font-medium transition-colors ${
+                      className={`block w-full text-left px-4 py-2 font-medium transition-colors text-sm ${
                         activeDropdown === "convert"
                           ? "text-red-500 bg-red-50"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
