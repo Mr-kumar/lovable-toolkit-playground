@@ -20,6 +20,7 @@ import {
   Edit,
   Shield,
   FileSearch,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { getToolsByCategory } from "@/data/toolsData";
 
 interface ToolInterfaceProps {
   toolId: string;
@@ -187,49 +189,32 @@ export const ToolInterface = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
     >
-        <motion.div
+      <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className={`rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden ${
-          files.length > 0 ? 'bg-gray-900 text-white' : 'bg-white'
-        }`}
+        className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden"
       >
         {/* Header */}
-        <div className={`flex items-center justify-between p-6 border-b ${
-          files.length > 0 ? 'border-gray-700' : 'border-gray-200'
-        }`}>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <ToolIcon className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <h2 className={`text-xl font-bold ${files.length > 0 ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className="text-xl font-bold text-gray-900">
                 {toolName}
               </h2>
-              <p className={`text-sm ${files.length > 0 ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className="text-sm text-gray-600">
                 {toolDescription}
               </p>
-              {files.length > 0 && (
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-300">
-                  <span className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1 text-green-400" /> Free
-                  </span>
-                  <span className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1 text-green-400" /> Online
-                  </span>
-                  <span className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1 text-green-400" /> No limits
-                  </span>
-                </div>
-              )}
             </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className={`hover:bg-gray-700 ${files.length > 0 ? 'text-white' : ''}`}
+            className="hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -239,68 +224,55 @@ export const ToolInterface = ({
           {files.length === 0 ? (
             // Initial upload interface
             <div className="p-6">
-              <div className="grid lg:grid-cols-2 gap-8">
-                {/* Upload Section */}
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Upload Files</h3>
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-semibold mb-4 text-gray-900">
+                  Choose {toolName === "Merge PDF" ? "PDFs" : "PDF"} to {toolName.toLowerCase()}
+                </h3>
 
-                    {/* File Upload Area */}
-                    <div
-                      className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-                        isDragOver
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                      onDrop={handleDrop}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                    >
-                      <div className="space-y-4">
-                        <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                          <Upload className="h-8 w-8 text-red-600" />
-                        </div>
-                        <div>
-                          <Button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="bg-red-500 hover:bg-red-600 text-white"
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            Choose Files
-                          </Button>
-                          <p className="text-sm text-gray-600 mt-2">
-                            or drop files here
-                          </p>
-                        </div>
-                      </div>
-
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={(e) => handleFileUpload(e.target.files)}
-                        className="hidden"
-                        aria-label="Upload files"
-                      />
+                {/* File Upload Area */}
+                <div
+                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors max-w-md mx-auto ${
+                    isDragOver
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
+                  <div className="space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                      <Upload className="h-8 w-8 text-red-600" />
+                    </div>
+                    <div>
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Choose Files
+                      </Button>
+                      <p className="text-sm text-gray-600 mt-2">
+                        or drop files here
+                      </p>
                     </div>
                   </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="hidden"
+                    aria-label="Upload files"
+                  />
                 </div>
+              </div>
 
-                {/* Features Section */}
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Features</h3>
-                    <div className="space-y-3">
-                      {getToolFeatures().map((feature, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-700">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
+              {/* Features Section */}
+              <div className="max-w-4xl mx-auto space-y-6">
+                <div className="grid md:grid-cols-3 gap-4">
                   <Card className="p-4 bg-blue-50 border-blue-200">
                     <div className="flex items-start space-x-3">
                       <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -310,8 +282,7 @@ export const ToolInterface = ({
                         </h4>
                         <p className="text-sm text-blue-700">
                           Your files are processed securely and automatically
-                          deleted after processing. We never store your documents on
-                          our servers.
+                          deleted after processing.
                         </p>
                       </div>
                     </div>
@@ -326,7 +297,22 @@ export const ToolInterface = ({
                         </h4>
                         <p className="text-sm text-green-700">
                           All our PDF tools are completely free to use with no
-                          hidden charges or subscriptions.
+                          hidden charges.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-4 bg-purple-50 border-purple-200">
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-medium text-purple-900 mb-1">
+                          High Quality
+                        </h4>
+                        <p className="text-sm text-purple-700">
+                          Professional quality output that maintains document
+                          integrity.
                         </p>
                       </div>
                     </div>
@@ -335,235 +321,139 @@ export const ToolInterface = ({
               </div>
             </div>
           ) : (
-            // Enhanced interface after file upload
-            <div className="p-6 space-y-6">
-              {/* File preview and upload area - matches screenshot design */}
-              <div className="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center min-h-[300px] flex items-center justify-center">
-                <div className="flex flex-col items-center space-y-4">
-                  {files.length === 1 ? (
-                    // Single file preview (like screenshot)
-                    <div className="flex flex-col items-center space-y-3">
-                      <div className="relative">
-                        {/* Search icon in top right */}
-                        <div className="absolute -top-2 -right-2 bg-blue-500 p-1 rounded">
-                          <FileSearch className="h-4 w-4 text-white" />
-                        </div>
-                        {/* PDF preview */}
-                        <div className="w-40 h-52 bg-gray-700 rounded-lg border border-gray-600 p-2">
-                          <div className="w-full h-full bg-white rounded overflow-hidden">
-                            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                              <div className="text-xs text-gray-600 p-2 leading-tight">
-                                {/* Simulated document content */}
-                                <div className="space-y-1">
-                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
-                                  <div className="h-2 bg-gray-300 rounded w-3/4"></div>
-                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
-                                  <div className="h-2 bg-gray-300 rounded w-1/2"></div>
-                                  <div className="h-2 bg-gray-300 rounded w-full"></div>
-                                  <div className="h-2 bg-gray-300 rounded w-2/3"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Filename */}
-                        <p className="text-sm text-gray-300 mt-2">{files[0].name}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    // Multiple files preview
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {files.map((file, index) => (
-                        <div key={index} className="flex flex-col items-center space-y-2">
-                          <div className="bg-gray-700 p-3 rounded-lg border border-gray-600 relative">
-                            <div className="w-24 h-32 bg-white rounded flex items-center justify-center mb-2">
-                              <FileText className="h-12 w-12 text-gray-400" />
-                            </div>
-                            <p className="text-xs text-gray-300 text-center truncate w-24">{file.name}</p>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeFile(index)}
-                              className="absolute -top-1 -right-1 h-5 w-5 text-gray-400 hover:text-red-400 bg-gray-800 rounded-full"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {/* Status indicators */}
-                  <div className="flex items-center space-x-4 text-gray-400 mt-4">
-                    <div className="bg-green-600 p-1 rounded">
-                      <CheckCircle className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="bg-gray-700 p-1 rounded">
-                      <FileText className="h-4 w-4" />
-                    </div>
-                  </div>
+            // Enhanced interface after file upload - matches screenshot design
+            <div className="p-6 space-y-6 bg-gray-50 min-h-full">
+              {/* Header */}
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  What would you like to do?
+                </h2>
+                
+                {/* File status indicator */}
+                <div className="inline-flex items-center bg-white rounded-full px-4 py-2 shadow-sm border mb-6">
+                  <FileText className="h-4 w-4 text-blue-500 mr-2" />
+                  <span className="text-sm font-medium">
+                    {files.length} file{files.length > 1 ? 's' : ''} uploaded
+                  </span>
+                  <span className="text-gray-400 ml-1">• PDF Document{files.length > 1 ? 's' : ''}</span>
                 </div>
               </div>
 
-              {/* Compression settings for compress tool */}
-              {toolId === "compress-pdf" && !isProcessed && (
-                <div className="bg-gray-800 rounded-xl p-6 space-y-4">
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-300">DPI</label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          value={compressionSettings.dpi}
-                          onChange={(e) => setCompressionSettings(prev => ({
-                            ...prev,
-                            dpi: parseInt(e.target.value) || 144
-                          }))}
-                          className="bg-gray-700 border-gray-600 text-white w-20"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-300">Image quality</label>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-white">/{compressionSettings.imageQuality}</span>
-                        <span className="text-gray-400">%</span>
-                      </div>
-                      <Slider
-                        value={[compressionSettings.imageQuality]}
-                        onValueChange={(value) => setCompressionSettings(prev => ({
-                          ...prev,
-                          imageQuality: value[0]
-                        }))}
-                        max={100}
-                        min={1}
-                        step={1}
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-300">Color</label>
-                      <Select 
-                        value={compressionSettings.colorMode}
-                        onValueChange={(value) => setCompressionSettings(prev => ({
-                          ...prev,
-                          colorMode: value
-                        }))}
-                      >
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="no-change">No change</SelectItem>
-                          <SelectItem value="grayscale">Grayscale</SelectItem>
-                          <SelectItem value="color">Color</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* File loaded indicator */}
-              {!isProcessing && !isProcessed && (
-                <div className="text-center">
-                  <p className="text-gray-400 mb-4">File loaded</p>
-                  <Button
-                    onClick={processFiles}
-                    className="px-12 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-full"
-                  >
-                    {toolId === "compress-pdf" ? "Compress" : "Process"}
-                  </Button>
-                </div>
-              )}
-
-              {/* Processing indicator */}
-              {isProcessing && (
-                <div className="text-center space-y-4">
-                  <div className="text-gray-400">
-                    {toolId === "compress-pdf" 
-                      ? `DPI: ${compressionSettings.dpi}, Image quality: ${compressionSettings.imageQuality}, Color: ${compressionSettings.colorMode}`
-                      : "Processing your files..."
-                    }
-                  </div>
-                  <Progress value={progress} className="h-2 bg-gray-700" />
-                </div>
-              )}
-
-              {/* Results section */}
-              {isProcessed && compressionResult && (
-                <div className="space-y-6">
-                  <div className="bg-gray-800 rounded-xl p-6 border border-green-500">
-                    <div className="text-center space-y-4">
-                      <div className="text-white">
-                        <span className="text-gray-400">PDF24 has processed your job. The size has been reduced by </span>
-                        <span className="text-blue-400 font-bold">
-                          {compressionResult.reductionPercentage.toFixed(2)}%
-                        </span>
-                        <span className="text-gray-400">.</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-center space-x-2 text-green-400">
-                        <FileText className="h-4 w-4" />
-                        <span>{files[0]?.name} - {formatFileSize(compressionResult.compressedSize)}</span>
-                      </div>
-                      
-                      <div className="flex justify-center space-x-3">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </Button>
-                        <Button className="bg-gray-600 hover:bg-gray-700 text-white px-4">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Preview
-                        </Button>
-                        <Button className="bg-purple-600 hover:bg-purple-700 text-white px-4">
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Erase
-                        </Button>
-                        <Button 
-                          onClick={resetInterface}
-                          className="bg-red-600 hover:bg-red-700 text-white px-4"
-                        >
-                          <RotateCcw className="h-4 w-4 mr-2" />
-                          Restart
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action toolbar */}
-                  <div className="grid grid-cols-8 gap-2">
-                    {[
-                      { icon: Mail, label: "Email", color: "bg-gray-700" },
-                      { icon: Share2, label: "Dropbox", color: "bg-blue-600" },
-                      { icon: Share2, label: "Google Drive", color: "bg-green-600" },
-                      { icon: FileText, label: "Fax", color: "bg-gray-700" },
-                      { icon: FileText, label: "Merge", color: "bg-gray-700" },
-                      { icon: Edit, label: "Edit", color: "bg-gray-700" },
-                      { icon: Shield, label: "Protect", color: "bg-gray-700" },
-                      { icon: Scissors, label: "Split", color: "bg-gray-700" },
-                    ].map((action, index) => (
-                      <div key={index} className="text-center">
+              {/* File preview cards */}
+              <div className="flex justify-center mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
+                  {files.map((file, index) => (
+                    <div key={index} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm relative">
+                      <div className="text-center">
+                        <div className="flex justify-center mb-3">
+                          <div className="w-12 h-16 bg-red-100 rounded flex items-center justify-center">
+                            <FileText className="h-6 w-6 text-red-600" />
+                          </div>
+                        </div>
+                        <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">{file.name}</h4>
+                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                        <p className="text-xs text-gray-400">PDF File</p>
                         <Button
-                          className={`${action.color} hover:opacity-80 w-12 h-12 rounded-lg mb-1`}
-                          size="icon"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                          className="text-red-500 hover:text-red-700 text-xs mt-2"
                         >
-                          <action.icon className="h-5 w-5" />
+                          Remove
                         </Button>
-                        <p className="text-xs text-gray-400">{action.label}</p>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="text-center text-yellow-400 text-sm">
-                    🟡 100% free thanks to advertising
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              )}
+              </div>
+
+              {/* Upload different files link */}
+              <div className="text-center mb-8">
+                <Button
+                  variant="ghost"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Upload different files
+                </Button>
+              </div>
+
+              {/* Tools available indicator */}
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center bg-blue-50 rounded-full px-4 py-2 border border-blue-200">
+                  <Zap className="h-4 w-4 text-blue-600 mr-2" />
+                  <span className="text-sm font-medium text-blue-800">
+                    24 tools available for your PDF file
+                  </span>
+                </div>
+              </div>
+
+              {/* Tool categories */}
+              {["Organize PDF", "Optimize PDF", "Convert PDF", "Edit PDF", "PDF Security"].map((category) => {
+                const categoryTools = getToolsByCategory(category);
+                if (categoryTools.length === 0) return null;
+                
+                return (
+                  <div key={category} className="mb-8">
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-900 uppercase tracking-wide">
+                        {category}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {categoryTools.length} tools available
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                      {categoryTools.slice(0, 4).map((tool) => (
+                        <Card key={tool.id} className="p-4 text-center hover:shadow-lg transition-shadow cursor-pointer group bg-white border border-gray-200">
+                          <div className="flex flex-col items-center space-y-3">
+                            <div className={`p-3 rounded-lg group-hover:scale-110 transition-transform ${
+                              category === "Organize PDF" ? "bg-orange-100" :
+                              category === "Optimize PDF" ? "bg-blue-100" :
+                              category === "Convert PDF" ? "bg-green-100" :
+                              category === "Edit PDF" ? "bg-purple-100" :
+                              "bg-red-100"
+                            }`}>
+                              <tool.icon className={`h-6 w-6 ${
+                                category === "Organize PDF" ? "text-orange-600" :
+                                category === "Optimize PDF" ? "text-blue-600" :
+                                category === "Convert PDF" ? "text-green-600" :
+                                category === "Edit PDF" ? "text-purple-600" :
+                                "text-red-600"
+                              }`} />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900 text-sm mb-1">{tool.name}</h4>
+                              <p className="text-xs text-gray-600 leading-relaxed">{tool.description}</p>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Process button */}
+              <div className="text-center pt-6">
+                <Button
+                  onClick={processFiles}
+                  disabled={isProcessing}
+                  className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 text-lg"
+                >
+                  {isProcessing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    `${toolName} Now`
+                  )}
+                </Button>
+              </div>
             </div>
+          )}
           )}
         </div>
       </motion.div>
