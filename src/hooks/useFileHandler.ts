@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 // File type detection
 export type FileType =
@@ -14,8 +14,8 @@ interface FileValidationResult {
   errors: string[];
 }
 
-export const useFileHandler = () => {
-  const [files, setFiles] = useState<File[]>([]);
+export const useFileHandler = (initialFiles: File[] = []) => {
+  const [files, setFiles] = useState<File[]>(initialFiles);
   const [errors, setErrors] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -104,7 +104,7 @@ export const useFileHandler = () => {
     return { validFiles, errors: allErrors };
   };
 
-  const handleFiles = async (list: FileList | null): Promise<File[]> => {
+  const handleFiles = useCallback(async (list: FileList | null): Promise<File[]> => {
     if (!list) return [];
 
     setIsUploading(true);
@@ -131,44 +131,44 @@ export const useFileHandler = () => {
     setFiles((prev) => [...prev, ...validFiles]);
     setIsUploading(false);
     return validFiles;
-  };
+  }, []);
 
-  const onDrop = async (e: React.DragEvent) => {
+  const onDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
     return await handleFiles(e.dataTransfer.files);
-  };
+  }, [handleFiles]);
 
-  const onDragOver = (e: React.DragEvent) => {
+  const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
-  };
+  }, []);
 
-  const onDragLeave = (e: React.DragEvent) => {
+  const onDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-  };
+  }, []);
 
   // File metadata helper
-  const formatFileSize = (bytes: number): string => {
+  const formatFileSize = useCallback((bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
+  }, []);
 
-  const clearErrors = () => {
+  const clearErrors = useCallback(() => {
     setErrors([]);
-  };
+  }, []);
 
-  const removeFile = (index: number) => {
+  const removeFile = useCallback((index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
-  };
+  }, []);
 
-  const resetFiles = () => {
+  const resetFiles = useCallback(() => {
     setFiles([]);
-  };
+  }, []);
 
   return {
     files,

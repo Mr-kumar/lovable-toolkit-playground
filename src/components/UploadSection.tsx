@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { Upload, Plus, Link, Shield, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFileHandler } from "@/hooks/useFileHandler";
@@ -6,15 +6,15 @@ import { useFileHandler } from "@/hooks/useFileHandler";
 interface UploadSectionProps {
   onFilesSelected: (files: File[]) => void;
   isUploading: boolean;
-  errors: string[];
-  clearErrors: () => void;
+  errors?: string[];
+  clearErrors?: () => void;
 }
 
-const UploadSection = ({
-  onFilesSelected,
+const UploadSection = ({ 
+  onFilesSelected, 
   isUploading,
-  errors,
-  clearErrors,
+  errors = [], 
+  clearErrors = () => {}, 
 }: UploadSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { 
@@ -304,4 +304,4 @@ const UploadSection = ({
   );
 };
 
-export default UploadSection;
+export default memo(UploadSection);

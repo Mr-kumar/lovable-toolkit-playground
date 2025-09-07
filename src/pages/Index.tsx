@@ -1,43 +1,50 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import UploadSection from "@/components/UploadSection";
 import ToolSelection from "@/components/ToolSelection";
+import { useFileHandler } from "@/hooks/useFileHandler";
 
 // UI States
 type UIState = "upload" | "tool-selection";
 
 const Index = () => {
   const [uiState, setUiState] = useState<UIState>("upload");
-  const [files, setFiles] = useState<File[]>([]);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
+  
+  // Use the custom hook for file handling
+  const {
+    files,
+    errors,
+    isUploading,
+    handleFiles,
+    removeFile,
+    clearErrors,
+    setFiles,
+    setErrors,
+  } = useFileHandler();
 
-  const handleFilesSelected = async (validFiles: File[]) => {
-    setIsUploading(true);
-    
-    // Simulate upload delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    
-    setFiles((prev) => [...prev, ...validFiles]);
-    setUiState("tool-selection");
-    setIsUploading(false);
-  };
+  // Handle file selection and UI state change
+  const handleFilesSelected = useCallback(async (validFiles: File[]) => {
+    if (validFiles.length > 0) {
+      // Simulate upload delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      
+      setFiles((prev) => [...prev, ...validFiles]);
+      setUiState("tool-selection");
+    }
+  }, [setFiles]);
 
-  const clearErrors = () => {
-    setErrors([]);
-  };
-
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-    if (files.length === 1) {
+  // Enhanced removeFile that also handles UI state
+  const handleRemoveFile = useCallback((index: number) => {
+    removeFile(index);
+    if (files.length <= 1) {
       setUiState("upload");
     }
-  };
+  }, [files.length, removeFile]);
 
-  const selectTool = (toolId: string) => {
+  const selectTool = useCallback((toolId: string) => {
     // Validate tool-specific requirements
     const toolRequirements: Record<string, { minFiles: number; message: string }> = {
       "merge-pdf": {
@@ -52,18 +59,28 @@ const Index = () => {
 
     const requirement = toolRequirements[toolId];
     if (requirement && files.length < requirement.minFiles) {
-      setErrors([requirement.message]);
+      clearErrors();
+      setFiles((prev) => [...prev]); // Trigger re-render without changing files
+      setTimeout(() => {
+        // Use setTimeout to ensure the error appears after the previous one is cleared
+        setErrors([requirement.message]);
+      }, 10);
       return;
     }
 
     if (toolId === "compare-pdf" && files.length > 2) {
-      setErrors([
-        "Compare PDF requires exactly 2 files. Please remove extra files.",
-      ]);
+      clearErrors();
+      setTimeout(() => {
+        setErrors([
+          "Compare PDF requires exactly 2 files. Please remove extra files.",
+        ]);
+      }, 10);
       return;
     }
 
     // Store files in sessionStorage to pass to tool page
+    // Note: In a production app, consider using React Context or a state management library
+    // instead of sessionStorage for better type safety
     const filesData = files.map((file) => ({
       name: file.name,
       size: file.size,
@@ -73,6 +90,9 @@ const Index = () => {
 
     sessionStorage.setItem("uploadedFiles", JSON.stringify(filesData));
     sessionStorage.setItem("fileCount", files.length.toString());
+    
+    // Get file types using the hook's getFileType function if available
+    // or use inline logic as before
     sessionStorage.setItem(
       "fileTypes",
       JSON.stringify(files.map((f) => {
@@ -87,28 +107,29 @@ const Index = () => {
     );
 
     navigate(`/tool/${toolId}?files=${files.length}`);
-  };
+  }, [files, clearErrors, navigate, setErrors]);
 
-  const resetUpload = () => {
+  const resetUpload = useCallback(() => {
     setFiles([]);
+    clearErrors();
     setUiState("upload");
-  };
+  }, [setFiles, clearErrors]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-grow">
-        {uiState === "upload" ? (
+        {uiState === "upload" && (
           <UploadSection
             onFilesSelected={handleFilesSelected}
             isUploading={isUploading}
-            errors={errors}
-            clearErrors={clearErrors}
           />
-        ) : (
+        )}
+
+        {uiState === "tool-selection" && (
           <ToolSelection
             files={files}
-            onRemoveFile={removeFile}
+            onRemoveFile={handleRemoveFile}
             onSelectTool={selectTool}
             onReset={resetUpload}
             errors={errors}

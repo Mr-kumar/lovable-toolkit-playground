@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { toolsConfig, FileType } from "@/data/toolsConfig";
 
@@ -35,11 +35,10 @@ const getFilesType = (files: File[]): FileType => {
 };
 
 const ToolGrid: React.FC<ToolGridProps> = ({ files, onSelectTool }) => {
-
-  const filesType = getFilesType(files);
+  const filesType = useMemo(() => getFilesType(files), [files]);
 
   // Filter tools based on file type compatibility
-  const getCompatibleTools = () => {
+  const compatibleTools = useMemo(() => {
     const compatibleCategories: Record<string, typeof toolsConfig[keyof typeof toolsConfig]> = {};
 
     Object.entries(toolsConfig).forEach(([key, category]) => {
@@ -56,9 +55,7 @@ const ToolGrid: React.FC<ToolGridProps> = ({ files, onSelectTool }) => {
     });
 
     return compatibleCategories;
-  };
-
-  const compatibleTools = getCompatibleTools();
+  }, [filesType]);
 
   // Animation variants
   const containerVariants = {
@@ -95,7 +92,7 @@ const ToolGrid: React.FC<ToolGridProps> = ({ files, onSelectTool }) => {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
           >
             {category.tools.map((tool) => {
               const Icon = tool.icon;

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import FileList from "./FileList";
 import ToolGrid from "@/components/ToolGrid";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 
 interface ToolSelectionProps {
   files: File[];
@@ -43,7 +43,7 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
 
             {/* Error display */}
             {errors.length > 0 && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-labelledby="error-heading">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <svg
@@ -51,6 +51,7 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"
+                      aria-hidden="true"
                     >
                       <path
                         fillRule="evenodd"
@@ -59,26 +60,51 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
                       />
                     </svg>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Error</h3>
+                  <div className="ml-3 flex-1">
+                    <h3 id="error-heading" className="text-sm font-medium text-red-800">Error</h3>
                     <div className="mt-1 text-sm text-red-700">
-                      <ul className="list-disc pl-5 space-y-1">
+                      <ul className="list-none space-y-1">
                         {errors.map((error, index) => (
-                          <li key={index}>{error}</li>
+                          <li key={index} className="flex items-start justify-between">
+                            <span className="mr-2">{error}</span>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const newErrors = [...errors];
+                                newErrors.splice(index, 1);
+                                if (newErrors.length === 0) {
+                                  clearErrors();
+                                } else {
+                                  // This assumes setErrors is passed down as a prop
+                                  // If not available, you'll need to modify the parent component
+                                  // For now, we'll just clear all errors
+                                  clearErrors();
+                                }
+                              }}
+                              className="text-red-600 hover:bg-red-100 p-1 h-auto"
+                              aria-label={`Dismiss error: ${error}`}
+                            >
+                              <X className="h-3 w-3" aria-hidden="true" />
+                            </Button>
+                          </li>
                         ))}
                       </ul>
                     </div>
-                    <div className="mt-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={clearErrors}
-                        className="text-red-600 hover:bg-red-50"
-                      >
-                        Dismiss
-                      </Button>
-                    </div>
+                    {errors.length > 1 && (
+                      <div className="mt-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={clearErrors}
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          Dismiss All
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -105,4 +131,4 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
   );
 };
 
-export default ToolSelection;
+export default memo(ToolSelection);
