@@ -14,6 +14,14 @@ interface FileValidationResult {
   errors: string[];
 }
 
+/**
+ * A custom hook for handling file operations including:
+ * - File validation
+ * - File type detection
+ * - File upload simulation
+ * - Drag and drop functionality
+ * - Error management
+ */
 export const useFileHandler = (initialFiles: File[] = []) => {
   const [files, setFiles] = useState<File[]>(initialFiles);
   const [errors, setErrors] = useState<string[]>([]);

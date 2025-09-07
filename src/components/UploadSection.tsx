@@ -1,5 +1,5 @@
 import { useRef, memo } from "react";
-import { Upload, Plus, Link, Shield, CheckCircle } from "lucide-react";
+import { Upload, Plus, Link, Shield, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFileHandler } from "@/hooks/useFileHandler";
 
@@ -8,13 +8,15 @@ interface UploadSectionProps {
   isUploading: boolean;
   errors?: string[];
   clearErrors?: () => void;
+  onDismissError?: (index: number) => void;
 }
 
 const UploadSection = ({ 
   onFilesSelected, 
   isUploading,
   errors = [], 
-  clearErrors = () => {}, 
+  clearErrors = () => {},
+  onDismissError = () => {}, 
 }: UploadSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { 
@@ -95,9 +97,18 @@ const UploadSection = ({
                   Upload Errors
                 </h3>
                 <div className="mt-2 text-sm text-red-700">
-                  <ul className="list-disc list-inside space-y-1">
+                  <ul className="list-disc list-inside space-y-2">
                     {errors.map((error, index) => (
-                      <li key={index}>{error}</li>
+                      <li key={index} className="flex items-start justify-between">
+                        <span className="mr-2">{error}</span>
+                        <button 
+                          onClick={() => onDismissError(index)}
+                          className="text-red-800 hover:text-red-900 ml-2 p-1"
+                          aria-label={`Dismiss error: ${error}`}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -105,8 +116,9 @@ const UploadSection = ({
                   <button
                     onClick={clearErrors}
                     className="text-sm font-medium text-red-800 hover:text-red-900 underline"
+                    aria-label="Dismiss all errors"
                   >
-                    Dismiss
+                    Dismiss All
                   </button>
                 </div>
               </div>

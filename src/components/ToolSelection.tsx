@@ -11,6 +11,7 @@ interface ToolSelectionProps {
   onReset: () => void;
   errors: string[];
   clearErrors: () => void;
+  onDismissError?: (index: number) => void;
 }
 
 const ToolSelection: React.FC<ToolSelectionProps> = ({
@@ -20,6 +21,7 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
   onReset,
   errors,
   clearErrors,
+  onDismissError = () => {},
 }) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -71,18 +73,7 @@ const ToolSelection: React.FC<ToolSelectionProps> = ({
                               type="button"
                               size="sm"
                               variant="ghost"
-                              onClick={() => {
-                                const newErrors = [...errors];
-                                newErrors.splice(index, 1);
-                                if (newErrors.length === 0) {
-                                  clearErrors();
-                                } else {
-                                  // This assumes setErrors is passed down as a prop
-                                  // If not available, you'll need to modify the parent component
-                                  // For now, we'll just clear all errors
-                                  clearErrors();
-                                }
-                              }}
+                              onClick={() => onDismissError(index)}
                               className="text-red-600 hover:bg-red-100 p-1 h-auto"
                               aria-label={`Dismiss error: ${error}`}
                             >

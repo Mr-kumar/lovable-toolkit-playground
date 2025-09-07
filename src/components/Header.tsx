@@ -174,24 +174,27 @@ export const Header = () => {
                 <div className="py-4 space-y-2">
                   <Link
                     to="/tool/merge-pdf"
-                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium flex items-center"
                     onClick={closeDropdowns}
+                    aria-label="Merge PDF"
                   >
-                    MERGE PDF
+                    <span className="mr-2">📄</span> MERGE PDF
                   </Link>
                   <Link
                     to="/tool/split-pdf"
-                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium flex items-center"
                     onClick={closeDropdowns}
+                    aria-label="Split PDF"
                   >
-                    SPLIT PDF
+                    <span className="mr-2">✂️</span> SPLIT PDF
                   </Link>
                   <Link
                     to="/tool/compress-pdf"
-                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium"
+                    className="block w-full text-left px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium flex items-center"
                     onClick={closeDropdowns}
+                    aria-label="Compress PDF"
                   >
-                    COMPRESS PDF
+                    <span className="mr-2">🗜️</span> COMPRESS PDF
                   </Link>
 
                   {/* Convert PDF Mobile Section */}

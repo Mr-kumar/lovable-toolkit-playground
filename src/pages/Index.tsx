@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import UploadSection from "@/components/UploadSection";
 import ToolSelection from "@/components/ToolSelection";
 import { useFileHandler } from "@/hooks/useFileHandler";
+import { Toast } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
 
 // UI States
 type UIState = "upload" | "tool-selection";
@@ -115,6 +117,11 @@ const Index = () => {
     setUiState("upload");
   }, [setFiles, clearErrors]);
 
+  // Function to dismiss a specific error by index
+  const dismissError = useCallback((index: number) => {
+    setErrors(prev => prev.filter((_, i) => i !== index));
+  }, [setErrors]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -123,6 +130,8 @@ const Index = () => {
           <UploadSection
             onFilesSelected={handleFilesSelected}
             isUploading={isUploading}
+            errors={errors}
+            onDismissError={dismissError}
           />
         )}
 
@@ -134,10 +143,12 @@ const Index = () => {
             onReset={resetUpload}
             errors={errors}
             clearErrors={clearErrors}
+            onDismissError={dismissError}
           />
         )}
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 };

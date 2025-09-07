@@ -46,12 +46,12 @@ const FileList: React.FC<FileListProps> = ({ files, onRemoveFile }) => {
           const FileIcon = getFileIcon(file);
           return (
             <li key={index} className="p-4 flex items-center justify-between hover:bg-gray-50">
-              <div className="flex items-center space-x-3 min-w-0 flex-wrap sm:flex-nowrap">
+              <div className="flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3 min-w-0 w-full pr-2">
                 <div className="flex-shrink-0 p-2 bg-gray-100 rounded-lg">
                   <FileIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
                 </div>
-                <div className="flex-1 min-w-0 w-full sm:w-auto mt-2 sm:mt-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-900 truncate" title={file.name}>{file.name}</p>
                   <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                 </div>
               </div>
