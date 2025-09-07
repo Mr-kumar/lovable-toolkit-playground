@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -27,7 +27,13 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { getToolsByCategory } from "@/data/toolsData";
 
@@ -54,7 +60,7 @@ export const ToolInterface = ({
   const [compressionSettings, setCompressionSettings] = useState({
     dpi: 144,
     imageQuality: 75,
-    colorMode: "no-change"
+    colorMode: "no-change",
   });
   const [compressionResult, setCompressionResult] = useState<{
     originalSize: number;
@@ -62,6 +68,7 @@ export const ToolInterface = ({
     reductionPercentage: number;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const handleFileUpload = (uploadedFiles: FileList | null) => {
     if (uploadedFiles) {
@@ -108,13 +115,17 @@ export const ToolInterface = ({
             setIsProcessing(false);
             setIsProcessed(true);
             // Simulate compression results
-            const originalSize = files.reduce((sum, file) => sum + file.size, 0);
+            const originalSize = files.reduce(
+              (sum, file) => sum + file.size,
+              0
+            );
             const compressionRatio = toolId === "compress-pdf" ? 0.35 : 0.8; // 65% reduction for compression
             const compressedSize = originalSize * compressionRatio;
             setCompressionResult({
               originalSize,
               compressedSize,
-              reductionPercentage: ((originalSize - compressedSize) / originalSize) * 100
+              reductionPercentage:
+                ((originalSize - compressedSize) / originalSize) * 100,
             });
             setProgress(0);
           }, 1000);
@@ -188,12 +199,17 @@ export const ToolInterface = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tool-dialog-title"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden"
+        ref={modalRef}
+        tabIndex={-1}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -202,12 +218,13 @@ export const ToolInterface = ({
               <ToolIcon className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2
+                id="tool-dialog-title"
+                className="text-xl font-bold text-gray-900"
+              >
                 {toolName}
               </h2>
-              <p className="text-sm text-gray-600">
-                {toolDescription}
-              </p>
+              <p className="text-sm text-gray-600">{toolDescription}</p>
             </div>
           </div>
           <Button
@@ -226,7 +243,8 @@ export const ToolInterface = ({
             <div className="p-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-semibold mb-4 text-gray-900">
-                  Choose {toolName === "Merge PDF" ? "PDFs" : "PDF"} to {toolName.toLowerCase()}
+                  Choose {toolName === "Merge PDF" ? "PDFs" : "PDF"} to{" "}
+                  {toolName.toLowerCase()}
                 </h3>
 
                 {/* File Upload Area */}
@@ -328,14 +346,16 @@ export const ToolInterface = ({
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   What would you like to do?
                 </h2>
-                
+
                 {/* File status indicator */}
                 <div className="inline-flex items-center bg-white rounded-full px-4 py-2 shadow-sm border mb-6">
                   <FileText className="h-4 w-4 text-blue-500 mr-2" />
                   <span className="text-sm font-medium">
-                    {files.length} file{files.length > 1 ? 's' : ''} uploaded
+                    {files.length} file{files.length > 1 ? "s" : ""} uploaded
                   </span>
-                  <span className="text-gray-400 ml-1">• PDF Document{files.length > 1 ? 's' : ''}</span>
+                  <span className="text-gray-400 ml-1">
+                    • PDF Document{files.length > 1 ? "s" : ""}
+                  </span>
                 </div>
               </div>
 
@@ -343,15 +363,22 @@ export const ToolInterface = ({
               <div className="flex justify-center mb-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
                   {files.map((file, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm relative">
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm relative"
+                    >
                       <div className="text-center">
                         <div className="flex justify-center mb-3">
                           <div className="w-12 h-16 bg-red-100 rounded flex items-center justify-center">
                             <FileText className="h-6 w-6 text-red-600" />
                           </div>
                         </div>
-                        <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">{file.name}</h4>
-                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                        <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">
+                          {file.name}
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          {formatFileSize(file.size)}
+                        </p>
                         <p className="text-xs text-gray-400">PDF File</p>
                         <Button
                           variant="ghost"
@@ -389,10 +416,16 @@ export const ToolInterface = ({
               </div>
 
               {/* Tool categories */}
-              {["Organize PDF", "Optimize PDF", "Convert PDF", "Edit PDF", "PDF Security"].map((category) => {
+              {[
+                "Organize PDF",
+                "Optimize PDF",
+                "Convert PDF",
+                "Edit PDF",
+                "PDF Security",
+              ].map((category) => {
                 const categoryTools = getToolsByCategory(category);
                 if (categoryTools.length === 0) return null;
-                
+
                 return (
                   <div key={category} className="mb-8">
                     <div className="text-center mb-6">
@@ -403,29 +436,48 @@ export const ToolInterface = ({
                         {categoryTools.length} tools available
                       </p>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                       {categoryTools.slice(0, 4).map((tool) => (
-                        <Card key={tool.id} className="p-4 text-center hover:shadow-lg transition-shadow cursor-pointer group bg-white border border-gray-200">
+                        <Card
+                          key={tool.id}
+                          className="p-4 text-center hover:shadow-lg transition-shadow cursor-pointer group bg-white border border-gray-200"
+                        >
                           <div className="flex flex-col items-center space-y-3">
-                            <div className={`p-3 rounded-lg group-hover:scale-110 transition-transform ${
-                              category === "Organize PDF" ? "bg-orange-100" :
-                              category === "Optimize PDF" ? "bg-blue-100" :
-                              category === "Convert PDF" ? "bg-green-100" :
-                              category === "Edit PDF" ? "bg-purple-100" :
-                              "bg-red-100"
-                            }`}>
-                              <tool.icon className={`h-6 w-6 ${
-                                category === "Organize PDF" ? "text-orange-600" :
-                                category === "Optimize PDF" ? "text-blue-600" :
-                                category === "Convert PDF" ? "text-green-600" :
-                                category === "Edit PDF" ? "text-purple-600" :
-                                "text-red-600"
-                              }`} />
+                            <div
+                              className={`p-3 rounded-lg group-hover:scale-110 transition-transform ${
+                                category === "Organize PDF"
+                                  ? "bg-orange-100"
+                                  : category === "Optimize PDF"
+                                  ? "bg-blue-100"
+                                  : category === "Convert PDF"
+                                  ? "bg-green-100"
+                                  : category === "Edit PDF"
+                                  ? "bg-purple-100"
+                                  : "bg-red-100"
+                              }`}
+                            >
+                              <tool.icon
+                                className={`h-6 w-6 ${
+                                  category === "Organize PDF"
+                                    ? "text-orange-600"
+                                    : category === "Optimize PDF"
+                                    ? "text-blue-600"
+                                    : category === "Convert PDF"
+                                    ? "text-green-600"
+                                    : category === "Edit PDF"
+                                    ? "text-purple-600"
+                                    : "text-red-600"
+                                }`}
+                              />
                             </div>
                             <div>
-                              <h4 className="font-semibold text-gray-900 text-sm mb-1">{tool.name}</h4>
-                              <p className="text-xs text-gray-600 leading-relaxed">{tool.description}</p>
+                              <h4 className="font-semibold text-gray-900 text-sm mb-1">
+                                {tool.name}
+                              </h4>
+                              <p className="text-xs text-gray-600 leading-relaxed">
+                                {tool.description}
+                              </p>
                             </div>
                           </div>
                         </Card>
@@ -453,7 +505,6 @@ export const ToolInterface = ({
                 </Button>
               </div>
             </div>
-          )}
           )}
         </div>
       </motion.div>

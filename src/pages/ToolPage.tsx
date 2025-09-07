@@ -37,8 +37,11 @@ import {
   ChevronDown,
   Settings,
 } from "lucide-react";
+import { toolsConfig } from "@/data/toolsConfig";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useFileHandler } from "@/hooks/useFileHandler";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +54,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import MergeSettings from "./tools/MergeSettings";
+import RepairSettings from "./tools/RepairSettings";
+import CompareSettings from "./tools/CompareSettings";
+import MergePreview from "./tools/MergePreview";
+import MergeResults from "./tools/MergeResults";
+import RepairPreview from "./tools/RepairPreview";
+import RepairResults from "./tools/RepairResults";
+import ComparePreview from "./tools/ComparePreview";
+import CompareResults from "./tools/CompareResults";
+import CompressSettings from "./tools/CompressSettings";
+import SplitSettings from "./tools/SplitSettings";
+import ProtectSettings from "./tools/ProtectSettings";
+import UnlockSettings from "./tools/UnlockSettings";
+import WatermarkSettings from "./tools/WatermarkSettings";
+import RotateSettings from "./tools/RotateSettings";
+import PageNumbersSettings from "./tools/PageNumbersSettings";
+import CropSettings from "./tools/CropSettings";
+import OCRSettings from "./tools/OCRSettings";
+import PdfToWordSettings from "./tools/PdfToWordSettings";
+import PdfToJpgSettings from "./tools/PdfToJpgSettings";
+import JpgToPdfSettings from "./tools/JpgToPdfSettings";
+import HtmlToPdfSettings from "./tools/HtmlToPdfSettings";
+import SignSettings from "./tools/SignSettings";
+import RedactSettings from "./tools/RedactSettings";
 
 interface ToolMeta {
   id: string;
@@ -60,309 +87,22 @@ interface ToolMeta {
   heroColor: string;
   features: string[];
 }
-
-const TOOLS: Record<string, ToolMeta> = {
-  "merge-pdf": {
-    id: "merge-pdf",
-    name: "Merge PDF",
-    description:
-      "Combine multiple PDF documents into a single file quickly and easily.",
-    icon: MergeIcon,
-    heroColor: "bg-violet-600",
-    features: [
-      "Merge multiple PDFs into a single file",
-      "Reorder pages before merging",
-      "Keep original quality and formatting",
-      "Works on any device, no install",
-    ],
-  },
-  "compress-pdf": {
-    id: "compress-pdf",
-    name: "Compress PDF",
-    description: "Reduce PDF file size while maintaining excellent quality.",
-    icon: Archive,
-    heroColor: "bg-red-600",
-    features: [
-      "Reduce size up to 90%",
-      "Fast, browser‑based compression",
-      "Keeps visual quality intact",
-      "Secure, temporary processing",
-    ],
-  },
-  "split-pdf": {
-    id: "split-pdf",
-    name: "Split PDF",
-    description: "Break large PDF files into smaller, manageable documents.",
-    icon: Scissors,
-    heroColor: "bg-amber-600",
-    features: [
-      "Split by ranges or extract pages",
-      "Preview and choose pages",
-      "No quality loss",
-      "Download instantly",
-    ],
-  },
-  "pdf-to-word": {
-    id: "pdf-to-word",
-    name: "PDF to Word",
-    description: "Transform PDF documents into editable Word files.",
-    icon: DocIcon,
-    heroColor: "bg-sky-600",
-    features: [
-      "High‑accuracy conversion",
-      "Preserve layout and fonts",
-      "Supports images and tables",
-      "Editable DOCX output",
-    ],
-  },
-  "word-to-pdf": {
-    id: "word-to-pdf",
-    name: "Word to PDF",
-    description: "Convert Word documents to PDF for universal compatibility.",
-    icon: DocIcon,
-    heroColor: "bg-slate-800",
-    features: [
-      "Pixel‑perfect rendering",
-      "Keeps fonts and formatting",
-      "Works with DOC and DOCX",
-      "Share‑ready output",
-    ],
-  },
-  "powerpoint-to-pdf": {
-    id: "powerpoint-to-pdf",
-    name: "PowerPoint to PDF",
-    description: "Convert PPT and PPTX slideshows into PDF for easy sharing.",
-    icon: Presentation,
-    heroColor: "bg-orange-600",
-    features: [
-      "Accurate slide rendering",
-      "Preserves images",
-      "No installation needed",
-      "Optimized for printing",
-    ],
-  },
-  "excel-to-pdf": {
-    id: "excel-to-pdf",
-    name: "Excel to PDF",
-    description: "Turn spreadsheets into polished PDFs that are easy to share.",
-    icon: FileSpreadsheet,
-    heroColor: "bg-emerald-600",
-    features: [
-      "Keeps table structure",
-      "Auto‑fit to pages",
-      "Great for reports",
-      "Fast and secure",
-    ],
-  },
-  "pdf-to-jpg": {
-    id: "pdf-to-jpg",
-    name: "PDF to JPG",
-    description: "Export pages or images from your PDF as JPG files.",
-    icon: FileImage,
-    heroColor: "bg-yellow-600",
-    features: [
-      "Extract every page as image",
-      "Keep quality high",
-      "Batch export",
-      "Quick downloads",
-    ],
-  },
-  "jpg-to-pdf": {
-    id: "jpg-to-pdf",
-    name: "JPG to PDF",
-    description: "Convert JPG and PNG images into a single PDF.",
-    icon: FileImage,
-    heroColor: "bg-pink-600",
-    features: [
-      "Multiple images supported",
-      "Reorder before export",
-      "Choose page size",
-      "Crisp output",
-    ],
-  },
-  "rotate-pdf": {
-    id: "rotate-pdf",
-    name: "Rotate PDF",
-    description: "Rotate pages in your PDF and save the orientation.",
-    icon: RotateCw,
-    heroColor: "bg-indigo-600",
-    features: [
-      "Rotate single or all pages",
-      "Preview before saving",
-      "Lossless output",
-      "Fast processing",
-    ],
-  },
-  watermark: {
-    id: "watermark",
-    name: "Add Watermark",
-    description: "Protect documents with text or image watermarks.",
-    icon: PenTool,
-    heroColor: "bg-teal-600",
-    features: [
-      "Custom text or image",
-      "Position and opacity",
-      "Repeat across pages",
-      "Brand your PDFs",
-    ],
-  },
-  "html-to-pdf": {
-    id: "html-to-pdf",
-    name: "HTML to PDF",
-    description: "Convert webpages or HTML into a clean PDF.",
-    icon: HtmlIcon,
-    heroColor: "bg-cyan-600",
-    features: [
-      "Paste a URL or HTML",
-      "Great for receipts & docs",
-      "Layouts preserved",
-      "Works on any device",
-    ],
-  },
-  "unlock-pdf": {
-    id: "unlock-pdf",
-    name: "Unlock PDF",
-    description: "Remove password protection from PDFs you own.",
-    icon: Unlock,
-    heroColor: "bg-lime-600",
-    features: [
-      "Quick unlock flow",
-      "Keep original file intact",
-      "Secure handling",
-      "Instant download",
-    ],
-  },
-  "protect-pdf": {
-    id: "protect-pdf",
-    name: "Protect PDF",
-    description: "Password‑protect your PDFs to control access.",
-    icon: Lock,
-    heroColor: "bg-stone-700",
-    features: [
-      "Strong encryption",
-      "Set open password",
-      "Simple to remove later",
-      "Easy sharing",
-    ],
-  },
-  "organize-pdf": {
-    id: "organize-pdf",
-    name: "Organize PDF",
-    description: "Reorder, delete, or duplicate pages in your PDF.",
-    icon: FileText,
-    heroColor: "bg-fuchsia-600",
-    features: [
-      "Drag & drop pages",
-      "Delete or duplicate",
-      "Combine with merge",
-      "Visual page grid",
-    ],
-  },
-  "pdf-to-pdfa": {
-    id: "pdf-to-pdfa",
-    name: "PDF to PDF/A",
-    description: "Convert to archivable PDF/A format for long‑term storage.",
-    icon: FileCheck,
-    heroColor: "bg-blue-700",
-    features: [
-      "ISO‑standard output",
-      "Great for records",
-      "Keeps text searchable",
-      "Consistent rendering",
-    ],
-  },
-  "repair-pdf": {
-    id: "repair-pdf",
-    name: "Repair PDF",
-    description: "Try to recover data from a damaged or corrupted PDF.",
-    icon: Wrench,
-    heroColor: "bg-rose-600",
-    features: [
-      "Recover as much as possible",
-      "Best‑effort restoration",
-      "Safe processing",
-      "Download fixed file",
-    ],
-  },
-  "page-numbers": {
-    id: "page-numbers",
-    name: "Add page numbers",
-    description: "Insert page numbers with custom position and style.",
-    icon: Hash,
-    heroColor: "bg-violet-700",
-    features: [
-      "Top/bottom placement",
-      "Choose start number",
-      "Font options",
-      "Applies to ranges",
-    ],
-  },
-  "scan-to-pdf": {
-    id: "scan-to-pdf",
-    name: "Scan to PDF",
-    description: "Send scans from your phone directly as PDFs.",
-    icon: Scan,
-    heroColor: "bg-zinc-700",
-    features: [
-      "Mobile friendly",
-      "Auto crop and enhance",
-      "Instant sync",
-      "Share with a link",
-    ],
-  },
-  "ocr-pdf": {
-    id: "ocr-pdf",
-    name: "OCR PDF",
-    description: "Make scanned PDFs searchable with OCR.",
-    icon: Search,
-    heroColor: "bg-sky-700",
-    features: [
-      "Detects text in images",
-      "Keeps layout intact",
-      "Great for archives",
-      "Boosts searchability",
-    ],
-  },
-  "compare-pdf": {
-    id: "compare-pdf",
-    name: "Compare PDF",
-    description: "Spot differences between two PDF versions side‑by‑side.",
-    icon: GitCompare,
-    heroColor: "bg-purple-700",
-    features: [
-      "Visual diff view",
-      "Highlight changes",
-      "Great for reviews",
-      "Export summary",
-    ],
-  },
-  "redact-pdf": {
-    id: "redact-pdf",
-    name: "Redact PDF",
-    description: "Permanently remove sensitive text and graphics.",
-    icon: Square,
-    heroColor: "bg-neutral-800",
-    features: [
-      "Manual or pattern redaction",
-      "Burn‑in securely",
-      "Compliant workflows",
-      "Audit‑friendly",
-    ],
-  },
-  "crop-pdf": {
-    id: "crop-pdf",
-    name: "Crop PDF",
-    description: "Trim margins or select an area to keep across pages.",
-    icon: Crop,
-    heroColor: "bg-amber-700",
-    features: [
-      "Custom crop box",
-      "Apply to ranges",
-      "Precise controls",
-      "Live preview",
-    ],
-  },
-};
+const TOOLS: Record<string, ToolMeta> = (() => {
+  const map: Record<string, ToolMeta> = {};
+  Object.values(toolsConfig).forEach((cat) => {
+    cat.tools.forEach((t) => {
+      map[t.id] = {
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        icon: t.icon,
+        heroColor: (t as any).color || "bg-blue-600",
+        features: t.features || [],
+      };
+    });
+  });
+  return map;
+})();
 
 const ACCEPT = ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png";
 
@@ -375,17 +115,40 @@ const ToolPage = () => {
   const [searchParams] = useSearchParams();
   const meta: ToolMeta | undefined = useMemo(() => TOOLS[toolId], [toolId]);
 
-  const [files, setFiles] = useState<File[]>([]);
+  const fileHandler = useFileHandler([]);
+  const {
+    files,
+    errors,
+    isUploading,
+    isDragOver,
+    handleFiles: hookHandleFiles,
+    onDrop: hookOnDrop,
+    onDragOver: hookOnDragOver,
+    onDragLeave: hookOnDragLeave,
+    formatFileSize,
+    clearErrors,
+    removeFile: hookRemoveFile,
+    resetFiles: hookResetFiles,
+    setFiles: setFilesFromHook,
+    setErrors: setErrorsFromHook,
+  } = fileHandler;
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isDragOver, setIsDragOver] = useState(false);
   const [uiState, setUiState] = useState<UIState>("upload");
   const [processedFile, setProcessedFile] = useState<{
     name: string;
     size: string;
     reduction?: string;
+    // optional recovery report for repair-pdf
+    recoveryReport?: { recovered: number; total: number; notes?: string };
+    // whether extraction artifacts are available
+    extractionAvailable?: boolean;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Track previous toolId to reset UI when switching tools (but skip initial mount)
+  const prevToolIdRef = useRef<string | null>(null);
 
   // Comprehensive tool-specific settings
   const [dpi, setDpi] = useState(144);
@@ -421,6 +184,11 @@ const ToolPage = () => {
   const [signatureText, setSignatureText] = useState("");
   const [redactPattern, setRedactPattern] = useState("");
   const [compareMode, setCompareMode] = useState("side-by-side");
+  // Repair-pdf specific UI state
+  const [repairAction, setRepairAction] = useState<
+    "auto" | "extract-pages" | "extract-images"
+  >("auto");
+  const [recoveryNotes, setRecoveryNotes] = useState("");
 
   // Check for files from Index page on component mount
   useEffect(() => {
@@ -428,7 +196,15 @@ const ToolPage = () => {
     const uploadedFilesData = sessionStorage.getItem("uploadedFiles");
     const fileCount = sessionStorage.getItem("fileCount");
 
-    if (hasFilesParam && uploadedFilesData && fileCount) {
+    // Accept files coming from sessionStorage even if the URL doesn't contain
+    // the `files` query param (e.g., user uploaded on Home and then clicked a
+    // recommended tool). This ensures the tool page will populate the file
+    // preview and allow adding more files for merge/compare flows.
+    if (
+      (hasFilesParam || uploadedFilesData) &&
+      uploadedFilesData &&
+      fileCount
+    ) {
       try {
         const filesData = JSON.parse(uploadedFilesData);
         // Convert file data back to File objects (simplified for demo)
@@ -445,7 +221,7 @@ const ToolPage = () => {
           return file;
         });
 
-        setFiles(mockFiles);
+        setFilesFromHook(mockFiles);
         setUiState("preview");
 
         // Clear sessionStorage after use
@@ -460,6 +236,33 @@ const ToolPage = () => {
       }
     }
   }, [searchParams, toolId, navigate]);
+
+  // When user switches to a different tool, reset UI and files (skip initial mount)
+  useEffect(() => {
+    if (prevToolIdRef.current && prevToolIdRef.current !== toolId) {
+      // user switched tools
+      try {
+        hookResetFiles();
+      } catch (e) {
+        /* ignore */
+      }
+      setUiState("upload");
+      setProcessedFile(null);
+      setProgress(0);
+      setIsProcessing(false);
+      try {
+        clearErrors();
+      } catch (e) {
+        /* ignore */
+      }
+      try {
+        if (inputRef.current) inputRef.current.value = "";
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    prevToolIdRef.current = toolId;
+  }, [toolId, hookResetFiles, clearErrors]);
 
   // Get comprehensive tool-specific settings
   const getToolSettings = () => {
@@ -561,30 +364,18 @@ const ToolPage = () => {
 
       case "merge-pdf":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">
-                Merge Order
-              </label>
-              <Select value={mergeOrder} onValueChange={setMergeOrder}>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="upload-order">Upload Order</SelectItem>
-                  <SelectItem value="alphabetical">Alphabetical</SelectItem>
-                  <SelectItem value="file-size">File Size</SelectItem>
-                  <SelectItem value="custom">Custom Order</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-blue-800 text-sm">
-                <strong>Tip:</strong> Drag and drop files to reorder them before
-                merging.
-              </p>
-            </div>
-          </div>
+          <MergeSettings
+            mergeOrder={mergeOrder}
+            setMergeOrder={setMergeOrder}
+          />
+        );
+
+      case "repair-pdf":
+        return (
+          <RepairSettings
+            repairAction={repairAction}
+            setRepairAction={setRepairAction as any}
+          />
         );
 
       case "split-pdf":
@@ -1133,30 +924,10 @@ const ToolPage = () => {
 
       case "compare-pdf":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">
-                Compare Mode
-              </label>
-              <Select value={compareMode} onValueChange={setCompareMode}>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="side-by-side">Side by Side</SelectItem>
-                  <SelectItem value="overlay">Overlay</SelectItem>
-                  <SelectItem value="highlight">
-                    Highlight Differences
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-blue-800 text-sm">
-                <strong>Note:</strong> Upload two PDF files to compare them.
-              </p>
-            </div>
-          </div>
+          <CompareSettings
+            compareMode={compareMode}
+            setCompareMode={setCompareMode}
+          />
         );
 
       default:
@@ -1200,28 +971,132 @@ const ToolPage = () => {
     }
   };
 
-  const handleFiles = (list: FileList | null) => {
+  const onFilesSelected = async (list: FileList | null) => {
     if (!list) return;
-    const newFiles = Array.from(list);
-    setFiles((prev) => [...prev, ...newFiles]);
-    setUiState("preview");
+    const added = await hookHandleFiles(list);
+    if (added && added.length > 0) setUiState("preview");
+    // Clear input so selecting the same file again will trigger change
+    try {
+      if (inputRef.current) inputRef.current.value = "";
+    } catch (e) {
+      /* ignore */
+    }
   };
 
-  const onDrop = (e: React.DragEvent) => {
+  const onDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragOver(false);
-    handleFiles(e.dataTransfer.files);
+    const added = await hookOnDrop(e);
+    if (added && added.length > 0) setUiState("preview");
   };
 
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const onRemoveFile = (index: number) => {
+    hookRemoveFile(index);
     if (files.length === 1) {
       setUiState("upload");
     }
   };
 
+  const moveFile = (fromIndex: number, toIndex: number) => {
+    setFilesFromHook((prev) => {
+      const newFiles = [...prev];
+      const [movedFile] = newFiles.splice(fromIndex, 1);
+      newFiles.splice(toIndex, 0, movedFile);
+      return newFiles;
+    });
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleReorderDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
+    if (dragIndex !== dropIndex) {
+      moveFile(dragIndex, dropIndex);
+    }
+  };
+
   const startProcessing = () => {
     if (files.length === 0) return;
+
+    // Validate files for merge-pdf tool
+    if (toolId === "merge-pdf") {
+      if (files.length < 2) {
+        toast({
+          title: "Select more files",
+          description: "Please select at least 2 PDF files to merge.",
+          variant: "destructive" as any,
+        });
+        return;
+      }
+
+      // Check if all files are PDFs
+      const nonPdfFiles = files.filter(
+        (file) =>
+          !file.type.includes("pdf") &&
+          !file.name.toLowerCase().endsWith(".pdf")
+      );
+      if (nonPdfFiles.length > 0) {
+        toast({
+          title: "Invalid files",
+          description: `Please select only PDF files. Found: ${nonPdfFiles
+            .map((f) => f.name)
+            .join(", ")}`,
+          variant: "destructive" as any,
+        });
+        return;
+      }
+
+      // Apply merge order setting
+      let orderedFiles = [...files];
+      switch (mergeOrder) {
+        case "alphabetical":
+          orderedFiles.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "file-size-asc":
+          orderedFiles.sort((a, b) => a.size - b.size);
+          break;
+        case "file-size-desc":
+          orderedFiles.sort((a, b) => b.size - a.size);
+          break;
+        case "custom":
+        case "upload-order":
+        default:
+          // Keep current order (either upload order or user's custom drag-drop order)
+          break;
+      }
+      setFilesFromHook(orderedFiles);
+    }
+
+    // Validate files for compare-pdf tool
+    if (toolId === "compare-pdf") {
+      if (files.length !== 2) {
+        toast({
+          title: "Compare requires two files",
+          description: "Please upload exactly 2 PDF files to compare.",
+          variant: "destructive" as any,
+        });
+        return;
+      }
+      // Ensure both are PDFs
+      const nonPdf = files.filter(
+        (f) => !f.type.includes("pdf") && !f.name.toLowerCase().endsWith(".pdf")
+      );
+      if (nonPdf.length > 0) {
+        toast({
+          title: "Invalid files",
+          description: "Please select only PDF files for comparison.",
+          variant: "destructive" as any,
+        });
+        return;
+      }
+    }
+
     setUiState("processing");
     setIsProcessing(true);
     setProgress(0);
@@ -1232,14 +1107,62 @@ const ToolPage = () => {
           setTimeout(() => {
             setIsProcessing(false);
             setProgress(0);
-            // Simulate processed file
-            const originalSize = files[0].size / 1024 / 1024;
-            const newSize = originalSize * 0.48; // 52% reduction
-            setProcessedFile({
-              name: files[0].name,
-              size: `${newSize.toFixed(2)} MB`,
-              reduction: "52.23%",
-            });
+
+            // Handle different tool types
+            if (toolId === "merge-pdf") {
+              // Calculate total size of all files
+              const totalSize =
+                files.reduce((sum, file) => sum + file.size, 0) / 1024 / 1024;
+              const mergedSize = totalSize * 0.95; // Slight size increase due to merging
+              setProcessedFile({
+                name: `merged-${files.length}-files.pdf`,
+                size: `${mergedSize.toFixed(2)} MB`,
+                reduction: undefined, // No reduction for merge
+              });
+            } else if (toolId === "repair-pdf") {
+              // Simulate a repair summary based on file size and chosen action
+              const orig = files[0];
+              const recovered = Math.max(
+                0,
+                Math.min(orig ? 20 : 0, Math.round(Math.random() * 20))
+              );
+              const total = orig ? 20 : 0;
+              const recoveredPct = total
+                ? Math.round((recovered / total) * 100)
+                : 0;
+              const sizeMb = orig ? (orig.size / 1024 / 1024) * 0.8 : 0.0;
+              setProcessedFile({
+                name: orig ? `repaired-${orig.name}` : "repaired.pdf",
+                size: `${sizeMb.toFixed(2)} MB`,
+                recoveryReport: { recovered, total },
+                extractionAvailable:
+                  repairAction !== "auto" || recovered < total,
+              });
+            } else if (toolId === "compare-pdf") {
+              // Simulate compare result: count differences
+              const diffs = Math.floor(Math.random() * 10);
+              setProcessedFile({
+                name: `compare-result-${Date.now()}.json`,
+                size: `${(diffs * 0.01).toFixed(2)} MB`,
+                reduction: undefined,
+                recoveryReport: undefined,
+              });
+              // Store a small compare summary in session for downstream usage
+              sessionStorage.setItem(
+                "compareSummary",
+                JSON.stringify({ differences: diffs })
+              );
+            } else {
+              // Original logic for other tools
+              const originalSize = files[0].size / 1024 / 1024;
+              const newSize = originalSize * 0.48; // 52% reduction
+              setProcessedFile({
+                name: files[0].name,
+                size: `${newSize.toFixed(2)} MB`,
+                reduction: "52.23%",
+              });
+            }
+
             setUiState("results");
           }, 800);
           return 100;
@@ -1250,7 +1173,7 @@ const ToolPage = () => {
   };
 
   const resetTool = () => {
-    setFiles([]);
+    hookResetFiles();
     setUiState("upload");
     setProcessedFile(null);
     setProgress(0);
@@ -1339,11 +1262,11 @@ const ToolPage = () => {
                 onDrop={onDrop}
                 onDragOver={(e) => {
                   e.preventDefault();
-                  setIsDragOver(true);
+                  hookOnDragOver(e);
                 }}
                 onDragLeave={(e) => {
                   e.preventDefault();
-                  setIsDragOver(false);
+                  hookOnDragLeave(e);
                 }}
               >
                 {/* Rating */}
@@ -1408,21 +1331,57 @@ const ToolPage = () => {
                 </div>
               </div>
 
-              <input
-                ref={inputRef}
-                type="file"
-                multiple
-                accept={ACCEPT}
-                aria-label="Upload files"
-                className="hidden"
-                onChange={(e) => handleFiles(e.target.files)}
-              />
+              {/* input moved to always-rendered location */}
             </div>
 
             {/* Free thanks to advertising */}
             <div className="text-center text-gray-500 text-sm">
               🙂 100% free thanks to advertising
             </div>
+
+            {/* Repair options available before upload for Repair PDF tool */}
+            {toolId === "repair-pdf" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mt-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Repair Options
+                </h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Choose how you'd like us to attempt recovery before uploading.
+                </p>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => setRepairAction("auto")}
+                    className={`px-3 py-2 rounded-md border ${
+                      repairAction === "auto"
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    Auto Repair
+                  </button>
+                  <button
+                    onClick={() => setRepairAction("extract-pages")}
+                    className={`px-3 py-2 rounded-md border ${
+                      repairAction === "extract-pages"
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    Extract Pages
+                  </button>
+                  <button
+                    onClick={() => setRepairAction("extract-images")}
+                    className={`px-3 py-2 rounded-md border ${
+                      repairAction === "extract-images"
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    Extract Images/Text
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         )}
 
@@ -1432,41 +1391,67 @@ const ToolPage = () => {
             {/* File Preview Area */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-8">
-                {/* File Preview */}
-                <div className="flex items-center justify-center mb-8">
-                  <div className="bg-gray-50 rounded-xl p-6 max-w-sm border border-gray-200">
-                    <div className="bg-white rounded-lg h-40 w-64 flex items-center justify-center mb-4 shadow-sm border border-gray-200">
-                      <FileText className="h-16 w-16 text-gray-400" />
+                {/* Merge preview - show even if only 1 file is uploaded so user can add more */}
+                {toolId === "merge-pdf" ? (
+                  <MergePreview
+                    files={files}
+                    onRemoveFile={onRemoveFile}
+                    handleDragStart={handleDragStart}
+                    handleDragOver={handleDragOver}
+                    handleReorderDrop={handleReorderDrop}
+                    inputRef={inputRef}
+                  />
+                ) : toolId === "compare-pdf" ? (
+                  <ComparePreview
+                    files={files}
+                    onCompare={() => startProcessing()}
+                    onRemove={(index: number) => onRemoveFile(index)}
+                  />
+                ) : toolId === "repair-pdf" ? (
+                  <RepairPreview
+                    file={files[0]}
+                    onStartRepair={() => startProcessing()}
+                    onRemove={() => onRemoveFile(0)}
+                  />
+                ) : (
+                  /* Single File Preview for Other Tools (unchanged) */
+                  <div>
+                    <div className="flex items-center justify-center mb-8">
+                      <div className="bg-gray-50 rounded-xl p-6 max-w-sm border border-gray-200">
+                        <div className="bg-white rounded-lg h-40 w-64 flex items-center justify-center mb-4 shadow-sm border border-gray-200">
+                          <FileText className="h-16 w-16 text-gray-400" />
+                        </div>
+                        <p className="text-gray-700 text-center font-medium">
+                          {files[0]?.name}
+                        </p>
+                        <p className="text-gray-500 text-sm text-center mt-1">
+                          {(files[0]?.size / 1024 / 1024).toFixed(1)} MB
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-gray-700 text-center font-medium">
-                      {files[0]?.name}
-                    </p>
-                    <p className="text-gray-500 text-sm text-center mt-1">
-                      {(files[0]?.size / 1024 / 1024).toFixed(1)} MB
-                    </p>
-                  </div>
-                </div>
 
-                {/* File Actions */}
-                <div className="flex justify-center space-x-6 mb-8">
-                  <button
-                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50"
-                    title="Preview file"
-                    aria-label="Preview file"
-                  >
-                    <Eye className="h-5 w-5" />
-                    <span className="text-sm font-medium">Preview</span>
-                  </button>
-                  <button
-                    onClick={() => removeFile(0)}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
-                    title="Remove file"
-                    aria-label="Remove file"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                    <span className="text-sm font-medium">Remove</span>
-                  </button>
-                </div>
+                    {/* File Actions */}
+                    <div className="flex justify-center space-x-6 mb-8">
+                      <button
+                        className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50"
+                        title="Preview file"
+                        aria-label="Preview file"
+                      >
+                        <Eye className="h-5 w-5" />
+                        <span className="text-sm font-medium">Preview</span>
+                      </button>
+                      <button
+                        onClick={() => onRemoveFile(0)}
+                        className="flex items-center space-x-2 text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
+                        title="Remove file"
+                        aria-label="Remove file"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                        <span className="text-sm font-medium">Remove</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Security & Cloud Storage */}
                 <div className="flex justify-between items-center">
@@ -1503,7 +1488,9 @@ const ToolPage = () => {
             {/* Process Button */}
             <div className="text-center bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
               <p className="text-gray-600 mb-6 text-lg">
-                File loaded and ready to process
+                {toolId === "merge-pdf" && files.length > 1
+                  ? `${files.length} PDF files ready to merge`
+                  : "File loaded and ready to process"}
               </p>
               <Button
                 onClick={startProcessing}
@@ -1543,6 +1530,17 @@ const ToolPage = () => {
             </div>
           </section>
         )}
+
+        {/* Always-available hidden file input used by 'Choose files' and 'Add More PDFs' */}
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          accept={ACCEPT}
+          aria-label="Upload files"
+          className="hidden"
+          onChange={(e) => onFilesSelected(e.target.files)}
+        />
 
         {/* State 4: Results */}
         {uiState === "results" && (
@@ -1625,6 +1623,77 @@ const ToolPage = () => {
                 What would you like to do next?
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* For merge tool show a compact results component */}
+                {toolId === "merge-pdf" && (
+                  <div className="col-span-2 md:col-span-4">
+                    <MergeResults
+                      mergedFile={processedFile ?? undefined}
+                      onDownload={() =>
+                        toast({
+                          title: "Download started",
+                          description: "Your merged PDF is being downloaded.",
+                        })
+                      }
+                      onRestart={resetTool}
+                    />
+                  </div>
+                )}
+
+                {/* For repair tool show repair results component */}
+                {toolId === "repair-pdf" && processedFile?.recoveryReport && (
+                  <div className="col-span-2 md:col-span-2">
+                    <RepairResults
+                      report={{
+                        recoveredPages: processedFile.recoveryReport.recovered,
+                        extractedText: !!processedFile.extractionAvailable,
+                      }}
+                      onDownload={() =>
+                        toast({
+                          title: "Download started",
+                          description: "Your repaired PDF is being downloaded.",
+                        })
+                      }
+                      onContinue={() => {
+                        if (processedFile) {
+                          const payload = [
+                            {
+                              name: processedFile.name,
+                              type: "application/pdf",
+                              size: 0,
+                              lastModified: Date.now(),
+                            },
+                          ];
+                          sessionStorage.setItem(
+                            "uploadedFiles",
+                            JSON.stringify(payload)
+                          );
+                          sessionStorage.setItem("fileCount", "1");
+                          navigate(`/tool/compress-pdf?files=1`);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* For compare show compare results */}
+                {toolId === "compare-pdf" && (
+                  <div className="col-span-2 md:col-span-2">
+                    <CompareResults
+                      summary={JSON.parse(
+                        sessionStorage.getItem("compareSummary") || "{}"
+                      )}
+                      onDownload={() =>
+                        toast({
+                          title: "Report downloaded",
+                          description: "Compare report saved.",
+                        })
+                      }
+                      onRestart={resetTool}
+                    />
+                  </div>
+                )}
+
+                {/* Default actions for all tools */}
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold shadow-lg">
                   <Download className="h-5 w-5 mr-2" />
                   Download
