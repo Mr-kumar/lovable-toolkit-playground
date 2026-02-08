@@ -7,6 +7,7 @@ import ToolSelection from "@/components/ToolSelection";
 import { useFileHandler } from "@/hooks/useFileHandler";
 import { Toast } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
+import { SEO } from "@/components/common";
 
 // UI States
 type UIState = "upload" | "tool-selection";
@@ -133,6 +134,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <SEO 
+        title="Free Online PDF Converter & Editor"
+        description="Convert, merge, split, compress and edit PDF files online for free. No registration required. Secure and fast processing."
+        keywords="PDF converter, PDF editor, merge PDF, split PDF, compress PDF, PDF to Word, free PDF tools"
+      />
       <Header />
       <main className="flex-grow">
         {uiState === "upload" && (
