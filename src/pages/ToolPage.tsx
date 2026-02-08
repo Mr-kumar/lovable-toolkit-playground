@@ -54,6 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SEO, getToolSEO } from "@/components/common";
 import MergeSettings from "./tools/MergeSettings";
 import RepairSettings from "./tools/RepairSettings";
 import CompareSettings from "./tools/CompareSettings";
@@ -1193,20 +1194,19 @@ const ToolPage = () => {
 
   const Icon = meta.icon;
 
+  const toolSEO = getToolSEO(toolId);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title={toolSEO.title}
+        description={toolSEO.description}
+        keywords={toolSEO.keywords}
+        canonicalUrl={`https://lovable-toolkit-playground.lovable.app/tool/${toolId}`}
+      />
       <Header />
 
       <main className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* SEO Meta Information */}
-        <div className="sr-only">
-          <h1>{meta.name} - Free Online PDF Tool</h1>
-          <p>{meta.description}</p>
-          <p>
-            Process PDF files online for free. No registration required. Secure
-            and fast.
-          </p>
-        </div>
         <button
           className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-8"
           onClick={() => {
